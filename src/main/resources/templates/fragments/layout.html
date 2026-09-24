@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' — Skam Bet'">Skam Bet</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<header th:fragment="header" class="header">
+    <div class="container header__inner">
+        <a th:href="@{/}" class="logo">SKAM<span>BET</span></a>
+
+        <nav class="nav">
+            <a th:href="@{/}" id="nav-line">Линия</a>
+        </nav>
+
+        <div class="user-panel" th:if="${currentUser != null}">
+            <span class="user-panel__name" id="current-user" th:text="${currentUser.username}">user</span>
+            <span class="user-panel__balance" id="balance" th:text="${@fmt.money(currentUser.balance)}">0.00 ₽</span>
+            <form th:action="@{/logout}" method="post" class="inline-form">
+                <button type="submit" class="btn btn-outline" id="logout-btn">Выйти</button>
+            </form>
+        </div>
+
+        <div class="user-panel" th:if="${currentUser == null}">
+            <a th:href="@{/login}" class="btn btn-outline" id="login-link">Вход</a>
+            <a th:href="@{/register}" class="btn btn-primary" id="register-link">Регистрация</a>
+        </div>
+    </div>
+</header>
+
+<div th:fragment="alerts" class="alerts">
+    <div class="alert alert-success" id="alert-success" th:if="${success}" th:text="${success}"></div>
+    <div class="alert alert-error" id="alert-error" th:if="${error}" th:text="${error}"></div>
+</div>
+
+<footer th:fragment="footer" class="footer">
+    <div class="container">
+        Skam Bet © 2026 · Сервис для лиц старше 18 лет · Учебный проект
+    </div>
+</footer>
+
+</body>
+</html>

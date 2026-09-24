@@ -1,0 +1,281 @@
+:root {
+    --bg: #0f1923;
+    --bg-card: #17232f;
+    --bg-input: #0f1923;
+    --border: #2a3a4a;
+    --text: #e6edf3;
+    --text-muted: #8b9bab;
+    --accent: #f5c518;
+    --accent-dark: #d4a90f;
+    --green: #2ecc71;
+    --red: #e74c3c;
+    --radius: 8px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 15px;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+h1 {
+    font-size: 26px;
+    margin: 0 0 20px;
+}
+
+h2 {
+    font-size: 18px;
+    margin: 0 0 16px;
+}
+
+.container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.page {
+    flex: 1;
+    padding-top: 28px;
+    padding-bottom: 40px;
+}
+
+.page--narrow {
+    max-width: 480px;
+}
+
+/* header */
+
+.header {
+    background: #0a1118;
+    border-bottom: 1px solid var(--border);
+}
+
+.header__inner {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    height: 64px;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--text);
+}
+
+.logo span {
+    color: var(--accent);
+}
+
+.logo:hover {
+    text-decoration: none;
+}
+
+.nav {
+    display: flex;
+    gap: 20px;
+    flex: 1;
+}
+
+.nav a {
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.nav a:hover {
+    color: var(--text);
+    text-decoration: none;
+}
+
+.user-panel {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-panel__name {
+    color: var(--text-muted);
+}
+
+.user-panel__balance {
+    font-weight: 700;
+    color: var(--accent);
+    background: rgba(245, 197, 24, 0.1);
+    padding: 6px 12px;
+    border-radius: var(--radius);
+}
+
+.inline-form {
+    margin: 0;
+}
+
+/* buttons */
+
+.btn {
+    display: inline-block;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.btn:hover {
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: #111;
+}
+
+.btn-primary:hover {
+    background: var(--accent-dark);
+}
+
+.btn-outline {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text);
+}
+
+.btn-outline:hover {
+    border-color: var(--text-muted);
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+}
+
+/* cards and forms */
+
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+}
+
+.form .form-group {
+    margin-bottom: 16px;
+}
+
+.form label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.form input[type=text],
+.form input[type=password] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-input);
+    color: var(--text);
+    font-size: 15px;
+}
+
+.form input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.form-row {
+    display: flex;
+    gap: 16px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.form-group--checkbox .checkbox {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    color: var(--text);
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.field-error {
+    color: var(--red);
+    font-size: 13px;
+    margin-top: 6px;
+}
+
+.form-hint {
+    color: var(--text-muted);
+    font-size: 13px;
+    text-align: center;
+    margin: 16px 0 0;
+}
+
+/* alerts */
+
+.alerts:empty {
+    display: none;
+}
+
+.alert {
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    font-weight: 600;
+}
+
+.alert-success {
+    background: rgba(46, 204, 113, 0.12);
+    border: 1px solid var(--green);
+    color: var(--green);
+}
+
+.alert-error {
+    background: rgba(231, 76, 60, 0.12);
+    border: 1px solid var(--red);
+    color: var(--red);
+}
+
+.empty-state {
+    color: var(--text-muted);
+    padding: 32px;
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+}
+
+.footer {
+    color: var(--text-muted);
+    font-size: 12px;
+    padding: 20px 0;
+    border-top: 1px solid var(--border);
+}
