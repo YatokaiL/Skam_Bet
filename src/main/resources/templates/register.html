@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Регистрация')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container page page--narrow">
+    <h1>Регистрация</h1>
+
+    <form th:action="@{/register}" th:object="${form}" method="post" class="card form" id="register-form" novalidate>
+        <div class="form-group">
+            <label for="username">Логин</label>
+            <input type="text" th:field="*{username}" autocomplete="username" placeholder="ivan_petrov">
+            <div class="field-error" id="username-error" th:if="${#fields.hasErrors('username')}"
+                 th:errors="*{username}"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="text" th:field="*{email}" autocomplete="email" placeholder="ivan@example.com">
+            <div class="field-error" id="email-error" th:if="${#fields.hasErrors('email')}"
+                 th:errors="*{email}"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="birthDate">Дата рождения</label>
+            <input type="text" th:field="*{birthDate}" placeholder="ДД.ММ.ГГГГ" maxlength="10">
+            <div class="field-error" id="birthDate-error" th:if="${#fields.hasErrors('birthDate')}"
+                 th:errors="*{birthDate}"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Пароль</label>
+            <input type="password" id="password" name="password" autocomplete="new-password"
+                   placeholder="не менее 8 символов">
+            <div class="field-error" id="password-error" th:if="${#fields.hasErrors('password')}"
+                 th:errors="*{password}"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="confirmPassword">Повторите пароль</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password">
+            <div class="field-error" id="confirmPassword-error" th:if="${#fields.hasErrors('confirmPassword')}"
+                 th:errors="*{confirmPassword}"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="register-btn">Зарегистрироваться</button>
+        <p class="form-hint">Уже есть аккаунт? <a th:href="@{/login}">Войти</a></p>
+    </form>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
