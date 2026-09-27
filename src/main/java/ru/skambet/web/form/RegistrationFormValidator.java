@@ -6,11 +6,13 @@ import org.springframework.validation.Validator;
 import ru.skambet.service.UserService;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.regex.Pattern;
 
 @Component
 public class RegistrationFormValidator implements Validator {
 
+    public static final int MIN_AGE = 18;
     private static final int MIN_PASSWORD_LENGTH = 8;
     private static final int MAX_PASSWORD_LENGTH = 64;
 
@@ -63,6 +65,10 @@ public class RegistrationFormValidator implements Validator {
         } else if (!password.equals(form.getConfirmPassword())) {
             errors.rejectValue("confirmPassword", "mismatch", "Пароли не совпадают");
         }
+
+        if (!form.isAcceptRules()) {
+            errors.rejectValue("acceptRules", "required", "Необходимо принять правила букмекерской конторы");
+        }
     }
 
     private void validateBirthDate(RegistrationForm form, Errors errors) {
@@ -73,6 +79,10 @@ public class RegistrationFormValidator implements Validator {
         LocalDate birthDate = form.parsedBirthDate();
         if (birthDate == null) {
             errors.rejectValue("birthDate", "format", "Укажите дату рождения в формате ДД.ММ.ГГГГ");
+        } else if (birthDate.isAfter(LocalDate.now())) {
+            errors.rejectValue("birthDate", "future", "Дата рождения не может быть в будущем");
+        } else if (Period.between(birthDate, LocalDate.now()).getYears() < MIN_AGE) {
+            errors.rejectValue("birthDate", "age", "Регистрация доступна только лицам, достигшим 18 лет");
         }
     }
 

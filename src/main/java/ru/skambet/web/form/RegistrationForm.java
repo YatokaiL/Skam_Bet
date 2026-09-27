@@ -15,6 +15,7 @@ public class RegistrationForm {
     private String birthDate;
     private String password;
     private String confirmPassword;
+    private boolean acceptRules;
 
     /**
      * @return birth date or null if it is empty or has a wrong format
@@ -68,5 +69,13 @@ public class RegistrationForm {
 
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
+    }
+
+    public boolean isAcceptRules() {
+        return acceptRules;
+    }
+
+    public void setAcceptRules(boolean acceptRules) {
+        this.acceptRules = acceptRules;
     }
 }

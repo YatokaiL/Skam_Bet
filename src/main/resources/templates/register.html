@@ -44,6 +44,16 @@
                  th:errors="*{confirmPassword}"></div>
         </div>
 
+        <div class="form-group form-group--checkbox">
+            <label class="checkbox">
+                <input type="checkbox" id="acceptRules" name="acceptRules" value="true"
+                       th:checked="*{acceptRules}">
+                Мне исполнилось 18 лет, я принимаю правила букмекерской конторы
+            </label>
+            <div class="field-error" id="acceptRules-error" th:if="${#fields.hasErrors('acceptRules')}"
+                 th:errors="*{acceptRules}"></div>
+        </div>
+
         <button type="submit" class="btn btn-primary btn-block" id="register-btn">Зарегистрироваться</button>
         <p class="form-hint">Уже есть аккаунт? <a th:href="@{/login}">Войти</a></p>
     </form>
