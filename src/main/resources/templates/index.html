@@ -5,8 +5,45 @@
 <header th:replace="~{fragments/layout :: header}"></header>
 
 <main class="container page">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
     <h1>Линия</h1>
-    <div class="empty-state">В линии пока нет событий</div>
+
+    <div th:if="${#lists.isEmpty(events)}" class="empty-state" id="no-events">В линии пока нет событий</div>
+
+    <table class="table events" id="events-table" th:unless="${#lists.isEmpty(events)}">
+        <thead>
+        <tr>
+            <th>Начало</th>
+            <th>Вид спорта</th>
+            <th>Событие</th>
+            <th class="col-odd">П1</th>
+            <th class="col-odd">X</th>
+            <th class="col-odd">П2</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="e : ${events}" class="event-row" th:attr="data-event-id=${e.id}">
+            <td class="event-time" th:text="${#temporals.format(e.startTime, 'dd.MM HH:mm')}">01.10 19:00</td>
+            <td class="event-sport" th:text="${e.sport.title}">Футбол</td>
+            <td class="event-title" th:text="${e.title}">Спартак — ЦСКА</td>
+            <td class="col-odd">
+                <a class="odd" data-outcome="HOME" th:href="@{/bets/new(eventId=${e.id},outcome='HOME')}"
+                   th:text="${@fmt.odds(e.oddsHome)}">2.10</a>
+            </td>
+            <td class="col-odd">
+                <a th:if="${e.oddsDraw != null}" class="odd" data-outcome="DRAW"
+                   th:href="@{/bets/new(eventId=${e.id},outcome='DRAW')}"
+                   th:text="${@fmt.odds(e.oddsDraw)}">3.40</a>
+                <span th:if="${e.oddsDraw == null}" class="odd odd--disabled" data-outcome="DRAW">—</span>
+            </td>
+            <td class="col-odd">
+                <a class="odd" data-outcome="AWAY" th:href="@{/bets/new(eventId=${e.id},outcome='AWAY')}"
+                   th:text="${@fmt.odds(e.oddsAway)}">3.20</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </main>
 
 <footer th:replace="~{fragments/layout :: footer}"></footer>
