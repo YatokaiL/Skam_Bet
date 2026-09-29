@@ -9,7 +9,17 @@
 
     <h1>Линия</h1>
 
-    <div th:if="${#lists.isEmpty(events)}" class="empty-state" id="no-events">В линии пока нет событий</div>
+    <div class="sport-tabs" id="sport-tabs">
+        <a th:href="@{/}" id="sport-ALL" class="tab"
+           th:classappend="${selectedSport == null} ? 'active'">Все</a>
+        <a th:each="s : ${sports}" th:href="@{/(sport=${s})}" th:id="'sport-' + ${s}" class="tab"
+           th:classappend="${selectedSport == s} ? 'active'" th:text="${s.title}">Футбол</a>
+    </div>
+
+    <div th:if="${#lists.isEmpty(events)}" class="empty-state" id="no-events"
+         th:text="${selectedSport == null} ? 'В линии пока нет событий' : 'Нет доступных событий по выбранному виду спорта'">
+        Нет событий
+    </div>
 
     <table class="table events" id="events-table" th:unless="${#lists.isEmpty(events)}">
         <thead>
