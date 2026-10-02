@@ -16,6 +16,7 @@
 
         <nav class="nav">
             <a th:href="@{/}" id="nav-line">Линия</a>
+            <a th:if="${currentUser != null}" th:href="@{/deposit}" id="nav-deposit">Пополнить</a>
         </nav>
 
         <div class="user-panel" th:if="${currentUser != null}">

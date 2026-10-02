@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Пополнение баланса')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container page">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <h1>Пополнение баланса</h1>
+
+    <form th:action="@{/deposit}" th:object="${form}" method="post" class="card form" id="deposit-form" novalidate>
+        <div class="form-group">
+            <label for="amount">Сумма, ₽</label>
+            <input type="text" th:field="*{amount}" inputmode="decimal" autocomplete="off"
+                   placeholder="от 100 до 100000">
+            <div class="field-error" id="amount-error" th:if="${#fields.hasErrors('amount')}"
+                 th:errors="*{amount}"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="cardNumber">Номер карты</label>
+            <input type="text" th:field="*{cardNumber}" inputmode="numeric" autocomplete="cc-number"
+                   placeholder="0000 0000 0000 0000" maxlength="23">
+            <div class="field-error" id="cardNumber-error" th:if="${#fields.hasErrors('cardNumber')}"
+                 th:errors="*{cardNumber}"></div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="cardExpiry">Срок действия</label>
+                <input type="text" th:field="*{cardExpiry}" autocomplete="cc-exp" placeholder="ММ/ГГ"
+                       maxlength="5">
+                <div class="field-error" id="cardExpiry-error" th:if="${#fields.hasErrors('cardExpiry')}"
+                     th:errors="*{cardExpiry}"></div>
+            </div>
+            <div class="form-group">
+                <label for="cardCvv">CVV</label>
+                <input type="password" id="cardCvv" name="cardCvv" autocomplete="cc-csc" placeholder="123"
+                       maxlength="3">
+                <div class="field-error" id="cardCvv-error" th:if="${#fields.hasErrors('cardCvv')}"
+                     th:errors="*{cardCvv}"></div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="deposit-btn">Пополнить баланс</button>
+        <p class="form-hint">Данные карты не сохраняются, в истории остаются только последние 4 цифры.</p>
+    </form>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
