@@ -8,6 +8,7 @@ import ru.skambet.repository.DepositRepository;
 import ru.skambet.repository.UserRepository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class DepositService {
@@ -33,6 +34,11 @@ public class DepositService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
         user.deposit(amount);
         return depositRepository.save(new Deposit(user, amount, mask(cardNumber)));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Deposit> getHistory(String username) {
+        return depositRepository.findByUserUsernameOrderByCreatedAtDescIdDesc(username);
     }
 
     private static String mask(String cardNumber) {

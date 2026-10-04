@@ -372,3 +372,26 @@ h2 {
     background: transparent;
     color: var(--text-muted);
 }
+
+/* deposit page */
+
+.two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+@media (max-width: 760px) {
+    .two-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .header__inner {
+        flex-wrap: wrap;
+        height: auto;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        gap: 12px;
+    }
+}

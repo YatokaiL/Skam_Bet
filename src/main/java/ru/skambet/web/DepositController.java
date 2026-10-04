@@ -31,6 +31,7 @@ public class DepositController {
     @GetMapping("/deposit")
     public String depositPage(Principal principal, Model model) {
         model.addAttribute("form", new DepositForm());
+        model.addAttribute("deposits", depositService.getHistory(principal.getName()));
         return "deposit";
     }
 
@@ -39,6 +40,7 @@ public class DepositController {
                           Principal principal, Model model, RedirectAttributes redirect) {
         depositValidator.validate(form, result);
         if (result.hasErrors()) {
+            model.addAttribute("deposits", depositService.getHistory(principal.getName()));
             return "deposit";
         }
         BigDecimal amount = Amounts.parse(form.getAmount());
