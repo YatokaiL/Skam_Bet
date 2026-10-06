@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Купон')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container page page--narrow">
+    <h1>Купон</h1>
+
+    <div class="card coupon">
+        <div class="coupon__row">
+            <span>Событие</span>
+            <b id="coupon-event" th:text="${event.title}">Спартак — ЦСКА</b>
+        </div>
+        <div class="coupon__row">
+            <span>Начало</span>
+            <b id="coupon-start" th:text="${#temporals.format(event.startTime, 'dd.MM.yyyy HH:mm')}"></b>
+        </div>
+        <div class="coupon__row">
+            <span>Исход</span>
+            <b id="coupon-outcome" th:text="${outcome.label}">П1</b>
+        </div>
+        <div class="coupon__row">
+            <span>Коэффициент</span>
+            <b id="coupon-odds" th:text="${@fmt.odds(odds)}" th:attr="data-odds=${odds}">2.10</b>
+        </div>
+    </div>
+
+    <form th:action="@{/bets}" th:object="${betForm}" method="post" class="card form" id="bet-form" novalidate>
+        <input type="hidden" th:field="*{eventId}">
+        <input type="hidden" th:field="*{outcome}">
+
+        <div class="form-group">
+            <label for="amount">Сумма ставки, ₽</label>
+            <input type="text" th:field="*{amount}" inputmode="decimal" autocomplete="off"
+                   placeholder="от 10 до 50000">
+            <div class="field-error" id="amount-error" th:if="${#fields.hasErrors('amount')}"
+                 th:errors="*{amount}"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="place-bet-btn">Сделать ставку</button>
+        <p class="form-hint"><a th:href="@{/}">Вернуться к линии</a></p>
+    </form>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

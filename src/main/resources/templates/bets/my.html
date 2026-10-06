@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Мои ставки')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container page">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <h1>Мои ставки</h1>
+
+    <div class="empty-state" id="no-bets" th:if="${#lists.isEmpty(bets)}">
+        Вы ещё не сделали ни одной ставки. <a th:href="@{/}">Перейти к линии</a>
+    </div>
+
+    <table class="table" id="bets-table" th:unless="${#lists.isEmpty(bets)}">
+        <thead>
+        <tr>
+            <th>Дата</th>
+            <th>Событие</th>
+            <th>Исход</th>
+            <th>Коэффициент</th>
+            <th>Сумма</th>
+            <th>Возможный выигрыш</th>
+            <th>Статус</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="b : ${bets}" class="bet-row">
+            <td class="bet-date" th:text="${#temporals.format(b.placedAt, 'dd.MM.yyyy HH:mm')}"></td>
+            <td class="bet-event" th:text="${b.event.title}"></td>
+            <td class="bet-outcome" th:text="${b.outcome.label}"></td>
+            <td class="bet-odds" th:text="${@fmt.odds(b.odds)}"></td>
+            <td class="bet-amount" th:text="${@fmt.money(b.amount)}"></td>
+            <td class="bet-win" th:text="${@fmt.money(b.potentialWin)}"></td>
+            <td class="bet-status">
+                <span class="badge" th:classappend="'badge--' + ${#strings.toLowerCase(b.status)}"
+                      th:text="${b.status.title}">В игре</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

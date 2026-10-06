@@ -395,3 +395,57 @@ h2 {
         gap: 12px;
     }
 }
+
+/* coupon */
+
+.coupon {
+    margin-bottom: 16px;
+}
+
+.coupon__row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.coupon__row:last-child {
+    border-bottom: none;
+}
+
+.coupon__row span {
+    color: var(--text-muted);
+}
+
+.coupon__win {
+    margin: 4px 0 20px;
+    color: var(--text-muted);
+}
+
+.coupon__win b {
+    color: var(--green);
+    font-size: 18px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.badge--pending {
+    background: rgba(245, 197, 24, 0.15);
+    color: var(--accent);
+}
+
+.badge--won {
+    background: rgba(46, 204, 113, 0.15);
+    color: var(--green);
+}
+
+.badge--lost {
+    background: rgba(231, 76, 60, 0.15);
+    color: var(--red);
+}
