@@ -38,11 +38,16 @@
                  th:errors="*{amount}"></div>
         </div>
 
+        <div class="coupon__win">
+            Возможный выигрыш: <b id="potential-win">0.00 ₽</b>
+        </div>
+
         <button type="submit" class="btn btn-primary btn-block" id="place-bet-btn">Сделать ставку</button>
         <p class="form-hint"><a th:href="@{/}">Вернуться к линии</a></p>
     </form>
 </main>
 
 <footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/bet-slip.js}"></script>
 </body>
 </html>
