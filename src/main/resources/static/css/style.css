@@ -449,3 +449,13 @@ h2 {
     background: rgba(231, 76, 60, 0.15);
     color: var(--red);
 }
+
+/* error page */
+
+.error-page {
+    text-align: center;
+}
+
+.error-page__code {
+    color: var(--text-muted);
+}

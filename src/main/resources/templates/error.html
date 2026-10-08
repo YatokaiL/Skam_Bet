@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Ошибка')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container page page--narrow">
+    <div class="card error-page">
+        <h1 th:if="${status == 404}">Страница не найдена</h1>
+        <h1 th:if="${status == 400}">Некорректный запрос</h1>
+        <h1 th:unless="${status == 404 or status == 400}">Сервис временно недоступен</h1>
+        <p th:unless="${status == 404 or status == 400}">
+            Не удалось выполнить операцию. Повторите попытку позже.
+        </p>
+        <p class="error-page__code" th:text="'Код ошибки: ' + ${status}">Код ошибки: 500</p>
+        <a th:href="@{/}" class="btn btn-primary">На главную</a>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
