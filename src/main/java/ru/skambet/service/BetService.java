@@ -31,7 +31,7 @@ public class BetService {
 
     @Transactional
     public Bet placeBet(String username, Long eventId, Outcome outcome, BigDecimal amount) {
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findForUpdate(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new BetRejectedException("Событие не найдено"));
