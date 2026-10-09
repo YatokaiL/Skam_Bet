@@ -10,6 +10,14 @@
 
 ## Запуск
 
+Всё в Docker:
+
+```bash
+docker compose up --build
+```
+
+Локально (в Docker только база):
+
 ```bash
 docker compose up -d db
 ./gradlew bootRun

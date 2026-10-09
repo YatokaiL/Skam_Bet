@@ -34,6 +34,15 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
+// only the executable jar is needed (used in Dockerfile)
+tasks.named('jar') {
+    enabled = false
+}
+
+tasks.named('bootJar') {
+    archiveFileName = 'skam-bet.jar'
+}
+
 tasks.named('test') {
     useJUnitPlatform()
 }

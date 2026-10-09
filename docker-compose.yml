@@ -17,6 +17,19 @@ services:
       timeout: 5s
       retries: 10
 
+  app:
+    build: .
+    container_name: skambet-app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/skambet
+      DB_USER: skambet
+      DB_PASSWORD: skambet
+      TZ: Europe/Moscow
+    ports:
+      - "8080:8080"
 
 volumes:
   pgdata:
