@@ -17,6 +17,13 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    cucumberVersion = '7.20.1'
+    // newer versions than spring boot 3.4 brings, older testcontainers can't talk to docker engine 29
+    set('selenium.version', '4.27.0')
+    set('testcontainers.version', '1.21.4')
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
@@ -27,6 +34,14 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.testcontainers:postgresql'
+    testImplementation platform("io.cucumber:cucumber-bom:${cucumberVersion}")
+    testImplementation 'io.cucumber:cucumber-java'
+    testImplementation 'io.cucumber:cucumber-spring'
+    testImplementation 'io.cucumber:cucumber-junit-platform-engine'
+    testImplementation 'org.junit.platform:junit-platform-suite'
+    testImplementation 'org.seleniumhq.selenium:selenium-java'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -45,4 +60,20 @@ tasks.named('bootJar') {
 
 tasks.named('test') {
     useJUnitPlatform()
+
+    // gradle -Dheadless=true test -> pass the option to the test jvm
+    ['headless', 'browser', 'step.delay', 'cucumber.filter.tags'].each { name ->
+        def value = System.getProperty(name)
+        if (value != null) {
+            systemProperty name, value
+        }
+    }
+
+    // ui tests depend on the browser and the db, always run them again
+    outputs.upToDateWhen { false }
+
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        exceptionFormat = 'full'
+    }
 }
