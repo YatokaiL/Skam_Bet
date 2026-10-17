@@ -47,4 +47,18 @@ public class TestData {
                              BigDecimal oddsHome, BigDecimal oddsDraw, BigDecimal oddsAway) {
         return eventRepository.save(new Event(sport, home, away, start, oddsHome, oddsDraw, oddsAway));
     }
+
+    /**
+     * Balance as it is stored in the db, not as the page shows it.
+     */
+    public BigDecimal balanceInDb(String username) {
+        return jdbcTemplate.queryForObject("SELECT balance FROM users WHERE username = ?", BigDecimal.class, username);
+    }
+
+    public int betsCountInDb(String username) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM bets b JOIN users u ON u.id = b.user_id WHERE u.username = ?",
+                Integer.class, username);
+        return count == null ? 0 : count;
+    }
 }

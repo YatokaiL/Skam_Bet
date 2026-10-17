@@ -51,6 +51,11 @@ public class BetSteps {
                 .anySatisfy(bet -> assertThat(bet).containsAllEntriesOf(expected));
     }
 
+    @И("^в списке ставок (\\d+) ставк(?:а|и|ок)$")
+    public void betsCount(int count) {
+        assertThat(new MyBetsPage(browser.driver()).bets()).hasSize(count);
+    }
+
     private BetSlipPage betSlip() {
         return new BetSlipPage(browser.driver());
     }
