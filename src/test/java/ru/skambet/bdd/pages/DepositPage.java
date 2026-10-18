@@ -35,6 +35,7 @@ public class DepositPage extends BasePage {
     }
 
     public boolean isHistoryEmpty() {
-        return visible(NO_DEPOSITS).isDisplayed() && driver.findElements(HISTORY_ROWS).isEmpty();
+        visible(By.tagName("h2"));
+        return driver.findElements(HISTORY_ROWS).isEmpty() && !driver.findElements(NO_DEPOSITS).isEmpty();
     }
 }

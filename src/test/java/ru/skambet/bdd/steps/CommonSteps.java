@@ -4,8 +4,7 @@ import io.cucumber.java.ru.Дано;
 import io.cucumber.java.ru.И;
 import io.cucumber.java.ru.Когда;
 import io.cucumber.java.ru.Тогда;
-import ru.skambet.bdd.pages.BasePage;
-import ru.skambet.bdd.pages.HomePage;
+import ru.skambet.bdd.pages.AnyPage;
 import ru.skambet.bdd.support.Browser;
 
 import java.util.Map;
@@ -76,8 +75,7 @@ public class CommonSteps {
         browser.open(path);
     }
 
-    // header, alerts and buttons are the same on every page
-    private BasePage page() {
-        return new HomePage(browser.driver());
+    private AnyPage page() {
+        return new AnyPage(browser.driver());
     }
 }

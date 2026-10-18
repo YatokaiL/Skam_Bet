@@ -1,6 +1,7 @@
 package ru.skambet.bdd.support;
 
 import io.cucumber.java.After;
+import io.cucumber.java.AfterStep;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
 import org.openqa.selenium.OutputType;
@@ -19,6 +20,21 @@ public class Hooks {
     @Before
     public void cleanDatabase() {
         testData.clear();
+    }
+
+    /**
+     * -Dstep.delay=1500 makes a pause after every step, to watch what the test is doing.
+     */
+    @AfterStep
+    public void slowDown() {
+        long delay = Long.getLong("step.delay", 0L);
+        if (delay > 0 && browser.isOpened()) {
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
     @After

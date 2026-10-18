@@ -4,6 +4,7 @@ import io.cucumber.java.ru.Дано;
 import io.cucumber.java.ru.И;
 import io.cucumber.java.ru.Когда;
 import io.cucumber.java.ru.Тогда;
+import ru.skambet.bdd.pages.AnyPage;
 import ru.skambet.bdd.pages.LoginPage;
 import ru.skambet.bdd.support.Browser;
 import ru.skambet.bdd.support.TestData;
@@ -49,17 +50,17 @@ public class AuthSteps {
 
     @Тогда("в шапке сайта отображается пользователь {string}")
     public void headerShowsUser(String username) {
-        new LoginPage(browser.driver()).shouldShowCurrentUser(username);
+        new AnyPage(browser.driver()).shouldShowCurrentUser(username);
     }
 
     @И("баланс пользователя равен {string}")
     public void balanceIs(String balance) {
-        new LoginPage(browser.driver()).shouldShowBalance(balance);
+        new AnyPage(browser.driver()).shouldShowBalance(balance);
     }
 
     @И("в шапке сайта отображается ссылка {string}")
     public void headerShowsLink(String text) {
-        LoginPage page = new LoginPage(browser.driver());
+        AnyPage page = new AnyPage(browser.driver());
         page.shouldShowHeaderLink(text);
         assertThat(page.isLoggedIn()).as("user must be logged out").isFalse();
     }
