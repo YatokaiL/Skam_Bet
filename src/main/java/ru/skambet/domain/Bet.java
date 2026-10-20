@@ -64,6 +64,13 @@ public class Bet {
         this.placedAt = LocalDateTime.now();
     }
 
+    /**
+     * Feature 6: WON or LOST by the result of the event.
+     */
+    public void settle(Outcome result) {
+        status = outcome == result ? BetStatus.WON : BetStatus.LOST;
+    }
+
     public Long getId() {
         return id;
     }

@@ -11,6 +11,8 @@ import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 @Table(name = "events")
@@ -43,6 +45,13 @@ public class Event {
     @Column(nullable = false, precision = 6, scale = 2)
     private BigDecimal oddsAway;
 
+    // feature 6: filled by the administrator after the match
+    @Enumerated(EnumType.STRING)
+    @Column(length = 10)
+    private Outcome result;
+
+    private LocalDateTime settledAt;
+
     protected Event() {
     }
 
@@ -71,6 +80,24 @@ public class Event {
             case DRAW -> oddsDraw;
             case AWAY -> oddsAway;
         };
+    }
+
+    public boolean isSettled() {
+        return result != null;
+    }
+
+    /**
+     * Outcomes that can be the result: draw is impossible when the sport has no draw odds.
+     */
+    public List<Outcome> getPossibleOutcomes() {
+        return Arrays.stream(Outcome.values())
+                .filter(o -> getOdds(o) != null)
+                .toList();
+    }
+
+    public void settle(Outcome result) {
+        this.result = result;
+        this.settledAt = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -103,5 +130,13 @@ public class Event {
 
     public BigDecimal getOddsAway() {
         return oddsAway;
+    }
+
+    public Outcome getResult() {
+        return result;
+    }
+
+    public LocalDateTime getSettledAt() {
+        return settledAt;
     }
 }
