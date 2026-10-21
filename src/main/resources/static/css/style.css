@@ -459,3 +459,30 @@ h2 {
 .error-page__code {
     color: var(--text-muted);
 }
+
+/* features 6-10 */
+
+.btn-small {
+    padding: 4px 10px;
+    font-size: 12px;
+}
+
+.section-title {
+    margin-top: 32px;
+}
+
+.settle-form {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0;
+}
+
+.settle-form select {
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-input);
+    color: var(--text);
+    font-family: inherit;
+}
