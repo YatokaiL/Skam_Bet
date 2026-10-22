@@ -19,7 +19,8 @@ public class CommonSteps {
             "Вход", "/login",
             "Регистрация", "/register",
             "Пополнение баланса", "/deposit",
-            "Мои ставки", "/bets/my");
+            "Мои ставки", "/bets/my",
+            "Расчёт событий", "/admin/events");
 
     private final Browser browser;
 
