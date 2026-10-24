@@ -40,7 +40,7 @@ public class TestData {
     }
 
     public void clear() {
-        jdbcTemplate.execute("TRUNCATE bets, deposits, events, users RESTART IDENTITY CASCADE");
+        jdbcTemplate.execute("TRUNCATE withdrawals, bets, deposits, events, users RESTART IDENTITY CASCADE");
     }
 
     public User createUser(String username, String password, BigDecimal balance) {
@@ -98,5 +98,12 @@ public class TestData {
                 "SELECT b.status FROM bets b JOIN users u ON u.id = b.user_id "
                         + "WHERE u.username = ? AND b.event_id = ? ORDER BY b.id DESC LIMIT 1",
                 String.class, username, eventByTitle(eventTitle).getId());
+    }
+
+    public int withdrawalsCountInDb(String username) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM withdrawals w JOIN users u ON u.id = w.user_id WHERE u.username = ?",
+                Integer.class, username);
+        return count == null ? 0 : count;
     }
 }

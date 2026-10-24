@@ -21,6 +21,7 @@
 | 4 | Пополнение баланса | оплата картой, проверка номера по алгоритму Луна, история пополнений |
 | 5 | Ставки | купон с расчётом выигрыша на лету, списание с баланса, раздел «Мои ставки» |
 | 6 | Расчёт ставок | администратор вносит результат события, выигрыши зачисляются на баланс |
+| 7 | Вывод средств | вывод на карту, проверка номера по алгоритму Луна, история выводов |
 
 Документация:
 
@@ -80,7 +81,7 @@ Feature-файлы лежат в `src/test/resources/features`, шаги и page
 | `-Dheadless=true` | без окна браузера |
 | `-Dbrowser=edge` | Edge вместо Chrome |
 | `-Dstep.delay=1500` | пауза после каждого шага в мс, чтобы было видно, что делает тест |
-| `-Dcucumber.filter.tags=@bet` | одна фича: `@registration`, `@login`, `@events`, `@deposit`, `@bet`, `@settlement` |
+| `-Dcucumber.filter.tags=@bet` | одна фича: `@registration`, `@login`, `@events`, `@deposit`, `@bet`, `@settlement`, `@withdrawal` |
 
 Например, посмотреть оформление ставки в замедленном режиме:
 
@@ -96,7 +97,7 @@ Feature-файлы лежат в `src/test/resources/features`, шаги и page
 ```
 src/main/java/ru/skambet
     config/        безопасность, демо-данные
-    domain/        сущности: User, Event, Bet, Deposit
+    domain/        сущности: User, Event, Bet, Deposit, Withdrawal
     repository/    Spring Data репозитории
     service/       бизнес-логика
     web/           контроллеры и формы
