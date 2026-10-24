@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Вывод средств')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container page">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <h1>Вывод средств</h1>
+
+    <div class="two-columns">
+        <form th:action="@{/withdraw}" th:object="${form}" method="post" class="card form" id="withdraw-form"
+              novalidate>
+            <div class="form-group">
+                <label for="amount">Сумма, ₽</label>
+                <input type="text" th:field="*{amount}" inputmode="decimal" autocomplete="off"
+                       placeholder="от 100 до 100000">
+                <div class="field-error" id="amount-error" th:if="${#fields.hasErrors('amount')}"
+                     th:errors="*{amount}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="cardNumber">Номер карты получателя</label>
+                <input type="text" th:field="*{cardNumber}" inputmode="numeric" autocomplete="cc-number"
+                       placeholder="0000 0000 0000 0000" maxlength="23">
+                <div class="field-error" id="cardNumber-error" th:if="${#fields.hasErrors('cardNumber')}"
+                     th:errors="*{cardNumber}"></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" id="withdraw-btn">Вывести средства</button>
+            <p class="form-hint">Деньги списываются с баланса сразу, в истории остаются только последние 4 цифры
+                карты.</p>
+        </form>
+
+        <section class="card">
+            <h2>История выводов</h2>
+            <div class="empty-state" id="no-withdrawals" th:if="${#lists.isEmpty(withdrawals)}">
+                Выводов пока не было
+            </div>
+            <table class="table" id="withdrawals-table" th:unless="${#lists.isEmpty(withdrawals)}">
+                <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Сумма</th>
+                    <th>Карта</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="w : ${withdrawals}" class="withdrawal-row">
+                    <td class="withdrawal-date" th:text="${#temporals.format(w.createdAt, 'dd.MM.yyyy HH:mm')}"></td>
+                    <td class="withdrawal-amount" th:text="${@fmt.money(w.amount)}"></td>
+                    <td class="withdrawal-card" th:text="${w.cardMask}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

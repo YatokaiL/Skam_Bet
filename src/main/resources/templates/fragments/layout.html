@@ -18,6 +18,7 @@
             <a th:href="@{/}" id="nav-line">Линия</a>
             <a th:if="${currentUser != null}" th:href="@{/bets/my}" id="nav-my-bets">Мои ставки</a>
             <a th:if="${currentUser != null}" th:href="@{/deposit}" id="nav-deposit">Пополнить</a>
+            <a th:if="${currentUser != null}" th:href="@{/withdraw}" id="nav-withdraw">Вывести</a>
             <a th:if="${currentUser != null and currentUser.admin}" th:href="@{/admin/events}"
                id="nav-settlement">Расчёт</a>
         </nav>
