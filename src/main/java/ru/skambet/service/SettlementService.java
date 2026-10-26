@@ -5,10 +5,12 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.skambet.domain.Bet;
 import ru.skambet.domain.BetStatus;
 import ru.skambet.domain.Event;
+import ru.skambet.domain.ExpressBet;
 import ru.skambet.domain.Outcome;
 import ru.skambet.domain.User;
 import ru.skambet.repository.BetRepository;
 import ru.skambet.repository.EventRepository;
+import ru.skambet.repository.ExpressBetRepository;
 import ru.skambet.repository.UserRepository;
 
 import java.math.BigDecimal;
@@ -24,12 +26,14 @@ public class SettlementService {
 
     private final EventRepository eventRepository;
     private final BetRepository betRepository;
+    private final ExpressBetRepository expressBetRepository;
     private final UserRepository userRepository;
 
     public SettlementService(EventRepository eventRepository, BetRepository betRepository,
-                             UserRepository userRepository) {
+                             ExpressBetRepository expressBetRepository, UserRepository userRepository) {
         this.eventRepository = eventRepository;
         this.betRepository = betRepository;
+        this.expressBetRepository = expressBetRepository;
         this.userRepository = userRepository;
     }
 
@@ -66,6 +70,12 @@ public class SettlementService {
             }
         }
 
+        for (ExpressBet express : expressBetRepository.findByEventAndStatus(eventId, BetStatus.PENDING)) {
+            express.settle();
+            if (express.getStatus() == BetStatus.WON) {
+                payOut(express.getUser(), express.getPotentialWin());
+            }
+        }
         return event;
     }
 
