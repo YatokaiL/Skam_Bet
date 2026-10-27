@@ -13,6 +13,7 @@ import ru.skambet.domain.Outcome;
 import ru.skambet.service.BetRejectedException;
 import ru.skambet.service.BetService;
 import ru.skambet.service.EventService;
+import ru.skambet.service.ExpressService;
 import ru.skambet.service.InsufficientFundsException;
 import ru.skambet.web.form.Amounts;
 import ru.skambet.web.form.BetForm;
@@ -29,11 +30,14 @@ public class BetController {
     private final BetService betService;
     private final EventService eventService;
     private final BetFormValidator betValidator;
+    private final ExpressService expressService;
 
-    public BetController(BetService betService, EventService eventService, BetFormValidator betValidator) {
+    public BetController(BetService betService, EventService eventService, BetFormValidator betValidator,
+                         ExpressService expressService) {
         this.betService = betService;
         this.eventService = eventService;
         this.betValidator = betValidator;
+        this.expressService = expressService;
     }
 
     @GetMapping("/bets/new")
@@ -84,6 +88,7 @@ public class BetController {
     @GetMapping("/bets/my")
     public String myBets(Principal principal, Model model) {
         model.addAttribute("bets", betService.getUserBets(principal.getName()));
+        model.addAttribute("expresses", expressService.getUserExpresses(principal.getName()));
         return "bets/my";
     }
 
