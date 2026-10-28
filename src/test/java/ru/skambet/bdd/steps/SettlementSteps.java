@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -62,6 +63,15 @@ public class SettlementSteps {
         testData.createBet(username, event, outcome(outcome), BigDecimal.valueOf(amount));
     }
 
+    @Дано("у пользователя {string} есть экспресс на {int} ₽:")
+    public void userHasExpress(String username, int amount, DataTable table) {
+        Map<String, Outcome> legs = new LinkedHashMap<>();
+        for (Map<String, String> row : table.asMaps()) {
+            legs.put(row.get("событие"), outcome(row.get("исход")));
+        }
+        testData.createExpress(username, BigDecimal.valueOf(amount), legs);
+    }
+
     @Когда("администратор указывает результат {string} для события {string}")
     public void settle(String result, String event) {
         settlementPage().settle(event, result);
@@ -90,6 +100,11 @@ public class SettlementSteps {
     @И("в базе данных ставка пользователя {string} на событие {string} имеет статус {string}")
     public void betStatusInDb(String username, String event, String status) {
         assertThat(testData.betStatusInDb(username, event)).isEqualTo(status(status).name());
+    }
+
+    @И("в базе данных экспресс пользователя {string} имеет статус {string}")
+    public void expressStatusInDb(String username, String status) {
+        assertThat(testData.expressStatusInDb(username)).isEqualTo(status(status).name());
     }
 
     @И("в меню нет раздела {string}")
