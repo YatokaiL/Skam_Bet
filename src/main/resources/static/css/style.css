@@ -462,6 +462,10 @@ h2 {
 
 /* features 6-10 */
 
+a.user-panel__name:hover {
+    color: var(--text);
+}
+
 .btn-small {
     padding: 4px 10px;
     font-size: 12px;
@@ -530,6 +534,10 @@ button.odd {
     background: var(--bg-input);
     color: var(--text);
     font-family: inherit;
+}
+
+.profile-data {
+    margin-bottom: 24px;
 }
 
 @media (max-width: 760px) {

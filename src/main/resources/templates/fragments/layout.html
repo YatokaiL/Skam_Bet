@@ -25,7 +25,8 @@
         </nav>
 
         <div class="user-panel" th:if="${currentUser != null}">
-            <span class="user-panel__name" id="current-user" th:text="${currentUser.username}">user</span>
+            <a th:href="@{/profile}" class="user-panel__name" id="current-user" title="Личный кабинет"
+               th:text="${currentUser.username}">user</a>
             <span class="user-panel__balance" id="balance" th:text="${@fmt.money(currentUser.balance)}">0.00 ₽</span>
             <form th:action="@{/logout}" method="post" class="inline-form">
                 <button type="submit" class="btn btn-outline" id="logout-btn">Выйти</button>

@@ -65,6 +65,14 @@ public class User {
         balance = balance.subtract(amount);
     }
 
+    public void changeEmail(String email) {
+        this.email = email;
+    }
+
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
     public boolean isAdmin() {
         return role == Role.ADMIN;
     }

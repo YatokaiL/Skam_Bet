@@ -40,4 +40,21 @@ public class UserService {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
     }
+
+    // feature 9: personal account
+
+    @Transactional(readOnly = true)
+    public boolean isPasswordCorrect(String username, String rawPassword) {
+        return passwordEncoder.matches(rawPassword, getByUsername(username).getPassword());
+    }
+
+    @Transactional
+    public void changeEmail(String username, String email) {
+        getByUsername(username).changeEmail(email.toLowerCase());
+    }
+
+    @Transactional
+    public void changePassword(String username, String rawPassword) {
+        getByUsername(username).changePassword(passwordEncoder.encode(rawPassword));
+    }
 }
