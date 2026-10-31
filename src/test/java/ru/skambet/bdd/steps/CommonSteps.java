@@ -22,6 +22,7 @@ public class CommonSteps {
             "Мои ставки", "/bets/my",
             "Экспресс", "/express",
             "Вывод средств", "/withdraw",
+            "Личный кабинет", "/profile",
             "Расчёт событий", "/admin/events");
 
     private final Browser browser;

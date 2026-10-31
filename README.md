@@ -23,6 +23,7 @@
 | 6 | Расчёт ставок | администратор вносит результат события, выигрыши зачисляются на баланс |
 | 7 | Вывод средств | вывод на карту, проверка номера по алгоритму Луна, история выводов |
 | 8 | Экспресс | купон из 2–10 событий, коэффициенты перемножаются |
+| 9 | Личный кабинет | данные пользователя, смена email и пароля |
 
 Документация:
 
@@ -82,7 +83,7 @@ Feature-файлы лежат в `src/test/resources/features`, шаги и page
 | `-Dheadless=true` | без окна браузера |
 | `-Dbrowser=edge` | Edge вместо Chrome |
 | `-Dstep.delay=1500` | пауза после каждого шага в мс, чтобы было видно, что делает тест |
-| `-Dcucumber.filter.tags=@bet` | одна фича: `@registration`, `@login`, `@events`, `@deposit`, `@bet`, `@settlement`, `@withdrawal`, `@express` |
+| `-Dcucumber.filter.tags=@bet` | одна фича: `@registration`, `@login`, `@events`, `@deposit`, `@bet`, `@settlement`, `@withdrawal`, `@express`, `@profile` |
 
 Например, посмотреть оформление ставки в замедленном режиме:
 

@@ -139,4 +139,8 @@ public class TestData {
                 Integer.class, username);
         return count == null ? 0 : count;
     }
+
+    public String emailInDb(String username) {
+        return jdbcTemplate.queryForObject("SELECT email FROM users WHERE username = ?", String.class, username);
+    }
 }
