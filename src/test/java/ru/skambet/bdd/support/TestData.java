@@ -112,6 +112,11 @@ public class TestData {
         return expressBetRepository.save(express);
     }
 
+    public void moveEventToPast(String eventTitle) {
+        jdbcTemplate.update("UPDATE events SET start_time = ? WHERE id = ?",
+                LocalDateTime.now().minusMinutes(1), eventByTitle(eventTitle).getId());
+    }
+
     public String betStatusInDb(String username, String eventTitle) {
         return jdbcTemplate.queryForObject(
                 "SELECT b.status FROM bets b JOIN users u ON u.id = b.user_id "
