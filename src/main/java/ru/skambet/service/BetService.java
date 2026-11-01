@@ -3,6 +3,7 @@ package ru.skambet.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skambet.domain.Bet;
+import ru.skambet.domain.BetStatus;
 import ru.skambet.domain.Event;
 import ru.skambet.domain.Outcome;
 import ru.skambet.domain.User;
@@ -54,5 +55,27 @@ public class BetService {
     @Transactional(readOnly = true)
     public List<Bet> getUserBets(String username) {
         return betRepository.findByUserUsernameOrderByPlacedAtDescIdDesc(username);
+    }
+
+    /**
+     * Feature 10: the bet is cancelled and the amount goes back to the balance.
+     * Possible only while the event has not started.
+     */
+    @Transactional
+    public Bet cancelBet(String username, Long betId) {
+        Bet bet = betRepository.findById(betId)
+                .filter(b -> b.getUser().getUsername().equals(username))
+                .orElseThrow(() -> new BetRejectedException("Ставка не найдена"));
+        if (bet.getStatus() != BetStatus.PENDING) {
+            throw new BetRejectedException("Ставка уже рассчитана или отменена");
+        }
+        if (bet.getEvent().isStarted()) {
+            throw new BetRejectedException("Отмена невозможна: событие уже началось");
+        }
+        User user = userRepository.findForUpdate(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+        user.deposit(bet.getAmount());
+        bet.cancel();
+        return bet;
     }
 }

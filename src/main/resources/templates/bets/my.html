@@ -23,6 +23,7 @@
             <th>Сумма</th>
             <th>Возможный выигрыш</th>
             <th>Статус</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
@@ -36,6 +37,12 @@
             <td class="bet-status">
                 <span class="badge" th:classappend="'badge--' + ${#strings.toLowerCase(b.status)}"
                       th:text="${b.status.title}">В игре</span>
+            </td>
+            <td class="bet-actions">
+                <form th:if="${b.cancellable}" th:action="@{/bets/{id}/cancel(id=${b.id})}" method="post"
+                      class="inline-form">
+                    <button type="submit" class="btn btn-outline btn-small">Отменить</button>
+                </form>
             </td>
         </tr>
         </tbody>

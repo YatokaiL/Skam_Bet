@@ -3,7 +3,8 @@ package ru.skambet.domain;
 public enum BetStatus {
     PENDING("В игре"),
     WON("Выигрыш"),
-    LOST("Проигрыш");
+    LOST("Проигрыш"),
+    CANCELLED("Отменена");
 
     private final String title;
 
