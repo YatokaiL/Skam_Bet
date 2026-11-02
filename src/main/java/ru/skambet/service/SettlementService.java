@@ -49,7 +49,7 @@ public class SettlementService {
 
     @Transactional
     public Event settle(Long eventId, Outcome result) {
-        Event event = eventRepository.findById(eventId)
+        Event event = eventRepository.findForUpdate(eventId)
                 .orElseThrow(() -> new SettlementRejectedException("Событие не найдено"));
         if (event.isSettled()) {
             throw new SettlementRejectedException("Событие уже рассчитано");
@@ -79,9 +79,8 @@ public class SettlementService {
         return event;
     }
 
+    // users were loaded together with the bets, without a lock - so the balance is changed in the db directly
     private void payOut(User owner, BigDecimal amount) {
-        User user = userRepository.findForUpdate(owner.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + owner.getUsername()));
-        user.deposit(amount);
+        userRepository.addToBalance(owner.getId(), amount);
     }
 }

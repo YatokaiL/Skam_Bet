@@ -63,6 +63,9 @@ public class BetService {
      */
     @Transactional
     public Bet cancelBet(String username, Long betId) {
+        // lock first: the bet and its user must be read after other requests of this user are finished
+        User user = userRepository.findForUpdate(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
         Bet bet = betRepository.findById(betId)
                 .filter(b -> b.getUser().getUsername().equals(username))
                 .orElseThrow(() -> new BetRejectedException("Ставка не найдена"));
@@ -72,8 +75,6 @@ public class BetService {
         if (bet.getEvent().isStarted()) {
             throw new BetRejectedException("Отмена невозможна: событие уже началось");
         }
-        User user = userRepository.findForUpdate(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
         user.deposit(bet.getAmount());
         bet.cancel();
         return bet;
