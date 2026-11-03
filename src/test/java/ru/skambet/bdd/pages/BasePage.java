@@ -4,6 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -30,7 +31,10 @@ public abstract class BasePage {
     protected BasePage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, TIMEOUT);
+        // the page can be reloaded right while we check it. An old element then gives StaleElementReference,
+        // chrome 156+ gives "Node with given id does not belong to the document" instead - just look again
         this.wait.ignoring(StaleElementReferenceException.class);
+        this.wait.ignoring(WebDriverException.class);
     }
 
     protected WebElement visible(By locator) {
