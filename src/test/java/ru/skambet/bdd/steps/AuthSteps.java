@@ -41,6 +41,12 @@ public class AuthSteps {
         loginPage.shouldShowCurrentUser(username);
     }
 
+    @Дано("сеанс пользователя истёк")
+    public void sessionExpired() {
+        // the page stays open in the browser, but the server doesn't know this session anymore
+        browser.driver().manage().deleteCookieNamed("JSESSIONID");
+    }
+
     @Когда("^(?:пользователь|посетитель) входит с логином \"([^\"]*)\" и паролем \"([^\"]*)\"$")
     public void userLogsIn(String username, String password) {
         LoginPage loginPage = new LoginPage(browser.driver());
