@@ -16,12 +16,17 @@
 
         <nav class="nav">
             <a th:href="@{/}" id="nav-line">Линия</a>
+            <a th:if="${currentUser != null}" th:href="@{/express}" id="nav-express">Экспресс</a>
             <a th:if="${currentUser != null}" th:href="@{/bets/my}" id="nav-my-bets">Мои ставки</a>
             <a th:if="${currentUser != null}" th:href="@{/deposit}" id="nav-deposit">Пополнить</a>
+            <a th:if="${currentUser != null}" th:href="@{/withdraw}" id="nav-withdraw">Вывести</a>
+            <a th:if="${currentUser != null and currentUser.admin}" th:href="@{/admin/events}"
+               id="nav-settlement">Расчёт</a>
         </nav>
 
         <div class="user-panel" th:if="${currentUser != null}">
-            <span class="user-panel__name" id="current-user" th:text="${currentUser.username}">user</span>
+            <a th:href="@{/profile}" class="user-panel__name" id="current-user" title="Личный кабинет"
+               th:text="${currentUser.username}">user</a>
             <span class="user-panel__balance" id="balance" th:text="${@fmt.money(currentUser.balance)}">0.00 ₽</span>
             <form th:action="@{/logout}" method="post" class="inline-form">
                 <button type="submit" class="btn btn-outline" id="logout-btn">Выйти</button>

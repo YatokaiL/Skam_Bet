@@ -19,6 +19,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/register", "/error").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/favicon.ico").permitAll()
+                        // feature 6: settlement of events
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/login")

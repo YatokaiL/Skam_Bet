@@ -9,7 +9,7 @@
 
     <h1>Мои ставки</h1>
 
-    <div class="empty-state" id="no-bets" th:if="${#lists.isEmpty(bets)}">
+    <div class="empty-state" id="no-bets" th:if="${#lists.isEmpty(bets) and #lists.isEmpty(expresses)}">
         Вы ещё не сделали ни одной ставки. <a th:href="@{/}">Перейти к линии</a>
     </div>
 
@@ -23,6 +23,7 @@
             <th>Сумма</th>
             <th>Возможный выигрыш</th>
             <th>Статус</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
@@ -36,6 +37,39 @@
             <td class="bet-status">
                 <span class="badge" th:classappend="'badge--' + ${#strings.toLowerCase(b.status)}"
                       th:text="${b.status.title}">В игре</span>
+            </td>
+            <td class="bet-actions">
+                <form th:if="${b.cancellable}" th:action="@{/bets/{id}/cancel(id=${b.id})}" method="post"
+                      class="inline-form">
+                    <button type="submit" class="btn btn-outline btn-small">Отменить</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2 class="section-title" th:unless="${#lists.isEmpty(expresses)}">Экспрессы</h2>
+    <table class="table" id="expresses-table" th:unless="${#lists.isEmpty(expresses)}">
+        <thead>
+        <tr>
+            <th>Дата</th>
+            <th>События</th>
+            <th>Коэффициент</th>
+            <th>Сумма</th>
+            <th>Возможный выигрыш</th>
+            <th>Статус</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="x : ${expresses}" class="express-row">
+            <td class="express-date" th:text="${#temporals.format(x.placedAt, 'dd.MM.yyyy HH:mm')}"></td>
+            <td class="express-events" th:text="${x.description}"></td>
+            <td class="express-odds" th:text="${@fmt.odds(x.odds)}"></td>
+            <td class="express-amount" th:text="${@fmt.money(x.amount)}"></td>
+            <td class="express-win" th:text="${@fmt.money(x.potentialWin)}"></td>
+            <td class="express-status">
+                <span class="badge" th:classappend="'badge--' + ${#strings.toLowerCase(x.status)}"
+                      th:text="${x.status.title}">В игре</span>
             </td>
         </tr>
         </tbody>

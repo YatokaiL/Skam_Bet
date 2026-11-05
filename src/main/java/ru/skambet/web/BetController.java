@@ -5,14 +5,17 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import ru.skambet.domain.Bet;
 import ru.skambet.domain.Event;
 import ru.skambet.domain.Outcome;
 import ru.skambet.service.BetRejectedException;
 import ru.skambet.service.BetService;
 import ru.skambet.service.EventService;
+import ru.skambet.service.ExpressService;
 import ru.skambet.service.InsufficientFundsException;
 import ru.skambet.web.form.Amounts;
 import ru.skambet.web.form.BetForm;
@@ -29,11 +32,16 @@ public class BetController {
     private final BetService betService;
     private final EventService eventService;
     private final BetFormValidator betValidator;
+    private final ExpressService expressService;
+    private final Formats formats;
 
-    public BetController(BetService betService, EventService eventService, BetFormValidator betValidator) {
+    public BetController(BetService betService, EventService eventService, BetFormValidator betValidator,
+                         ExpressService expressService, Formats formats) {
         this.betService = betService;
         this.eventService = eventService;
         this.betValidator = betValidator;
+        this.expressService = expressService;
+        this.formats = formats;
     }
 
     @GetMapping("/bets/new")
@@ -84,7 +92,21 @@ public class BetController {
     @GetMapping("/bets/my")
     public String myBets(Principal principal, Model model) {
         model.addAttribute("bets", betService.getUserBets(principal.getName()));
+        model.addAttribute("expresses", expressService.getUserExpresses(principal.getName()));
         return "bets/my";
+    }
+
+    // feature 10
+    @PostMapping("/bets/{id}/cancel")
+    public String cancelBet(@PathVariable Long id, Principal principal, RedirectAttributes redirect) {
+        try {
+            Bet bet = betService.cancelBet(principal.getName(), id);
+            redirect.addFlashAttribute("success",
+                    "Ставка отменена, " + formats.money(bet.getAmount()) + " возвращены на баланс");
+        } catch (BetRejectedException e) {
+            redirect.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/bets/my";
     }
 
     private static boolean isBettable(Event event, Outcome outcome) {

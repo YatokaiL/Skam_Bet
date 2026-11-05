@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import ru.skambet.domain.Event;
+import ru.skambet.domain.Role;
 import ru.skambet.domain.Sport;
 import ru.skambet.domain.User;
 import ru.skambet.repository.EventRepository;
@@ -42,6 +43,13 @@ public class DataInitializer implements CommandLineRunner {
             demo.setBalance(new BigDecimal("5000.00"));
             userRepository.save(demo);
         }
+        // feature 6: administrator settles finished events
+        if (userRepository.findByUsername("admin").isEmpty()) {
+            User admin = new User("admin", "admin@skambet.ru", passwordEncoder.encode("admin12345"),
+                    LocalDate.of(1990, 1, 1));
+            admin.setRole(Role.ADMIN);
+            userRepository.save(admin);
+        }
 
         // db is persistent, old demo matches are in the past after a few days - add new ones then
         if (!eventRepository.findByStartTimeAfterOrderByStartTimeAsc(LocalDateTime.now()).isEmpty()) {
@@ -57,6 +65,8 @@ public class DataInitializer implements CommandLineRunner {
         event(Sport.BASKETBALL, "УНИКС", "Локомотив-Кубань", today.plusDays(3), "1.75", null, "2.05");
         event(Sport.TENNIS, "Медведев Д.", "Рублёв А.", today.plusHours(30), "1.55", null, "2.40");
         event(Sport.ESPORTS, "Team Spirit", "NAVI", today.plusHours(10), "1.80", null, "1.95");
+        // already started - waits for the result in the admin section
+        event(Sport.FOOTBALL, "Динамо", "Ростов", today.minusHours(2), "1.90", "3.50", "4.10");
     }
 
     private void event(Sport sport, String home, String away, LocalDateTime start,

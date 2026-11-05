@@ -64,6 +64,28 @@ public class Bet {
         this.placedAt = LocalDateTime.now();
     }
 
+    public boolean isPending() {
+        return status == BetStatus.PENDING;
+    }
+
+    /**
+     * Feature 10: a single bet can be cancelled while the event has not started.
+     */
+    public boolean isCancellable() {
+        return isPending() && !event.isStarted();
+    }
+
+    public void cancel() {
+        status = BetStatus.CANCELLED;
+    }
+
+    /**
+     * Feature 6: WON or LOST by the result of the event.
+     */
+    public void settle(Outcome result) {
+        status = outcome == result ? BetStatus.WON : BetStatus.LOST;
+    }
+
     public Long getId() {
         return id;
     }

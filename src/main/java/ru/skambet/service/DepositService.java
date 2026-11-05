@@ -41,7 +41,8 @@ public class DepositService {
         return depositRepository.findByUserUsernameOrderByCreatedAtDescIdDesc(username);
     }
 
-    private static String mask(String cardNumber) {
+    // also used for withdrawals
+    static String mask(String cardNumber) {
         String digits = cardNumber.replaceAll("\\D", "");
         return "**** " + digits.substring(digits.length() - 4);
     }

@@ -12,4 +12,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByStartTimeAfterOrderByStartTimeAsc(LocalDateTime time);
 
     List<Event> findBySportAndStartTimeAfterOrderByStartTimeAsc(Sport sport, LocalDateTime time);
+
+    // feature 6: started events waiting for the result
+    List<Event> findByStartTimeLessThanEqualAndResultIsNullOrderByStartTimeAsc(LocalDateTime time);
+
+    List<Event> findByResultIsNotNullOrderBySettledAtDescIdDesc();
 }
