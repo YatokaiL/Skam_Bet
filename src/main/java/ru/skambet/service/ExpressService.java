@@ -75,6 +75,11 @@ public class ExpressService {
     }
 
     @Transactional(readOnly = true)
+    public long countUserExpresses(String username) {
+        return expressBetRepository.countByUserUsername(username);
+    }
+
+    @Transactional(readOnly = true)
     public List<ExpressBet> getUserExpresses(String username) {
         List<ExpressBet> list = expressBetRepository.findByUserUsernameOrderByPlacedAtDescIdDesc(username);
         // legs are lazy, the view needs them after the transaction (open-in-view is off)

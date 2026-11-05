@@ -11,4 +11,6 @@ public interface BetRepository extends JpaRepository<Bet, Long> {
     List<Bet> findByUserUsernameOrderByPlacedAtDescIdDesc(String username);
 
     List<Bet> findByEventIdAndStatus(Long eventId, BetStatus status);
+
+    long countByUserUsername(String username);
 }

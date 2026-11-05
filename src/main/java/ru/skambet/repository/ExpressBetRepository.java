@@ -12,6 +12,8 @@ public interface ExpressBetRepository extends JpaRepository<ExpressBet, Long> {
 
     List<ExpressBet> findByUserUsernameOrderByPlacedAtDescIdDesc(String username);
 
+    long countByUserUsername(String username);
+
     @Query("select distinct x from ExpressBet x join x.legs l where l.event.id = :eventId and x.status = :status")
     List<ExpressBet> findByEventAndStatus(@Param("eventId") Long eventId, @Param("status") BetStatus status);
 }

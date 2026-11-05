@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.skambet.service.BetService;
+import ru.skambet.service.ExpressService;
 import ru.skambet.service.UserService;
 import ru.skambet.web.form.EmailForm;
 import ru.skambet.web.form.PasswordForm;
@@ -23,11 +24,14 @@ public class ProfileController {
 
     private final UserService userService;
     private final BetService betService;
+    private final ExpressService expressService;
     private final ProfileValidator profileValidator;
 
-    public ProfileController(UserService userService, BetService betService, ProfileValidator profileValidator) {
+    public ProfileController(UserService userService, BetService betService, ExpressService expressService,
+                             ProfileValidator profileValidator) {
         this.userService = userService;
         this.betService = betService;
+        this.expressService = expressService;
         this.profileValidator = profileValidator;
     }
 
@@ -68,7 +72,10 @@ public class ProfileController {
     }
 
     private void fillProfile(Principal principal, Model model) {
-        model.addAttribute("user", userService.getByUsername(principal.getName()));
-        model.addAttribute("betsCount", betService.getUserBets(principal.getName()).size());
+        String username = principal.getName();
+        model.addAttribute("user", userService.getByUsername(username));
+        // single bets and expresses
+        model.addAttribute("betsCount",
+                betService.countUserBets(username) + expressService.countUserExpresses(username));
     }
 }

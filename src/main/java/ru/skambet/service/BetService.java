@@ -57,6 +57,11 @@ public class BetService {
         return betRepository.findByUserUsernameOrderByPlacedAtDescIdDesc(username);
     }
 
+    @Transactional(readOnly = true)
+    public long countUserBets(String username) {
+        return betRepository.countByUserUsername(username);
+    }
+
     /**
      * Feature 10: the bet is cancelled and the amount goes back to the balance.
      * Possible only while the event has not started.
