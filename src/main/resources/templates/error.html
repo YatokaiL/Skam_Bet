@@ -8,8 +8,10 @@
     <div class="card error-page">
         <h1 th:if="${status == 404}">Страница не найдена</h1>
         <h1 th:if="${status == 400}">Некорректный запрос</h1>
-        <h1 th:unless="${status == 404 or status == 400}">Сервис временно недоступен</h1>
-        <p th:unless="${status == 404 or status == 400}">
+        <h1 th:if="${status == 403}">Доступ запрещён</h1>
+        <p th:if="${status == 403}">Раздел доступен только администратору.</p>
+        <h1 th:unless="${status == 404 or status == 400 or status == 403}">Сервис временно недоступен</h1>
+        <p th:unless="${status == 404 or status == 400 or status == 403}">
             Не удалось выполнить операцию. Повторите попытку позже.
         </p>
         <p class="error-page__code" th:text="'Код ошибки: ' + ${status}">Код ошибки: 500</p>

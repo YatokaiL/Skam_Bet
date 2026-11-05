@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Экспресс')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container page">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <h1>Экспресс</h1>
+
+    <div class="express-layout">
+        <section>
+            <p class="form-hint">Выберите исходы от 2 до 10 разных событий. Коэффициенты перемножаются,
+                экспресс выигрывает, только если угаданы все исходы.</p>
+
+            <div th:if="${#lists.isEmpty(events)}" class="empty-state" id="no-events">В линии пока нет событий</div>
+
+            <table class="table events" id="events-table" th:unless="${#lists.isEmpty(events)}">
+                <thead>
+                <tr>
+                    <th>Начало</th>
+                    <th>Событие</th>
+                    <th class="col-odd">П1</th>
+                    <th class="col-odd">X</th>
+                    <th class="col-odd">П2</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="e : ${events}" class="event-row" th:attr="data-event-id=${e.id}">
+                    <td class="event-time" th:text="${#temporals.format(e.startTime, 'dd.MM HH:mm')}"></td>
+                    <td class="event-title" th:text="${e.title}">Спартак — ЦСКА</td>
+                    <td class="col-odd" th:each="o : ${outcomes}">
+                        <form th:if="${e.getOdds(o) != null}" th:action="@{/express/add}" method="post"
+                              class="inline-form">
+                            <input type="hidden" name="eventId" th:value="${e.id}">
+                            <input type="hidden" name="outcome" th:value="${o}">
+                            <button type="submit" class="odd" th:attr="data-outcome=${o}"
+                                    th:classappend="${coupon.isSelected(e.id, o)} ? 'odd--selected'"
+                                    th:text="${@fmt.odds(e.getOdds(o))}">2.10</button>
+                        </form>
+                        <span th:if="${e.getOdds(o) == null}" class="odd odd--disabled"
+                              th:attr="data-outcome=${o}">—</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <aside class="card express-coupon" id="express-coupon">
+            <h2>Купон экспресса</h2>
+
+            <div class="empty-state" id="express-empty" th:if="${#lists.isEmpty(items)}">
+                Добавьте события из линии
+            </div>
+
+            <div th:each="item : ${items}" class="express-leg" th:attr="data-event-id=${item.event.id}">
+                <div class="express-leg__info">
+                    <b class="express-leg__event" th:text="${item.event.title}">Спартак — ЦСКА</b>
+                    <span class="express-leg__outcome">
+                        <span class="express-leg__label" th:text="${item.outcome.label}">П1</span>
+                        · <span class="express-leg__odds" th:text="${@fmt.odds(item.odds)}">2.10</span>
+                    </span>
+                </div>
+                <form th:action="@{/express/remove}" method="post" class="inline-form">
+                    <input type="hidden" name="eventId" th:value="${item.event.id}">
+                    <button type="submit" class="btn btn-outline btn-small">Убрать</button>
+                </form>
+            </div>
+
+            <form th:unless="${#lists.isEmpty(items)}" th:action="@{/express}" th:object="${expressForm}"
+                  method="post" class="form" id="express-form" novalidate>
+                <div class="coupon__row">
+                    <span>Событий</span>
+                    <b id="express-count" th:text="${#lists.size(items)}">2</b>
+                </div>
+                <div class="coupon__row">
+                    <span>Общий коэффициент</span>
+                    <b id="coupon-odds" th:text="${@fmt.odds(totalOdds)}" th:attr="data-odds=${totalOdds}">4.10</b>
+                </div>
+
+                <div class="form-group">
+                    <label for="amount">Сумма ставки, ₽</label>
+                    <input type="text" th:field="*{amount}" inputmode="decimal" autocomplete="off"
+                           placeholder="от 10 до 50000">
+                    <div class="field-error" id="amount-error" th:if="${#fields.hasErrors('amount')}"
+                         th:errors="*{amount}"></div>
+                </div>
+
+                <div class="coupon__win">
+                    Возможный выигрыш: <b id="potential-win">0.00 ₽</b>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" id="place-express-btn">Сделать экспресс</button>
+            </form>
+
+            <form th:unless="${#lists.isEmpty(items)}" th:action="@{/express/clear}" method="post" class="form-hint">
+                <button type="submit" class="btn btn-outline btn-small">Очистить купон</button>
+            </form>
+        </aside>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<!-- the same live calculation as in the single bet slip -->
+<script th:src="@{/js/bet-slip.js}"></script>
+</body>
+</html>

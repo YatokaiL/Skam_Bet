@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Расчёт событий')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container page">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <h1>Расчёт событий</h1>
+
+    <h2>Ожидают результата</h2>
+    <div class="empty-state" id="no-events-to-settle" th:if="${#lists.isEmpty(toSettle)}">
+        Нет начавшихся событий без результата
+    </div>
+    <table class="table" id="settle-table" th:unless="${#lists.isEmpty(toSettle)}">
+        <thead>
+        <tr>
+            <th>Начало</th>
+            <th>Вид спорта</th>
+            <th>Событие</th>
+            <th>Результат</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="e : ${toSettle}" class="settle-row" th:attr="data-event-id=${e.id}">
+            <td class="event-time" th:text="${#temporals.format(e.startTime, 'dd.MM HH:mm')}"></td>
+            <td class="event-sport" th:text="${e.sport.title}"></td>
+            <td class="event-title" th:text="${e.title}"></td>
+            <td>
+                <form th:action="@{/admin/events/{id}/settle(id=${e.id})}" method="post" class="settle-form">
+                    <select name="result" class="settle-result">
+                        <option th:each="o : ${e.possibleOutcomes}" th:value="${o}" th:text="${o.label}">П1</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary btn-small">Рассчитать</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2 class="section-title">Рассчитанные события</h2>
+    <div class="empty-state" id="no-settled-events" th:if="${#lists.isEmpty(settled)}">
+        Рассчитанных событий пока нет
+    </div>
+    <table class="table" id="settled-table" th:unless="${#lists.isEmpty(settled)}">
+        <thead>
+        <tr>
+            <th>Начало</th>
+            <th>Событие</th>
+            <th>Результат</th>
+            <th>Рассчитано</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="e : ${settled}" class="settled-row">
+            <td class="event-time" th:text="${#temporals.format(e.startTime, 'dd.MM HH:mm')}"></td>
+            <td class="event-title" th:text="${e.title}"></td>
+            <td class="event-result" th:text="${e.result.label}"></td>
+            <td class="event-settled-at" th:text="${#temporals.format(e.settledAt, 'dd.MM.yyyy HH:mm')}"></td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

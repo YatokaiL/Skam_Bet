@@ -13,11 +13,11 @@ import java.util.regex.Pattern;
 public class RegistrationFormValidator implements Validator {
 
     public static final int MIN_AGE = 18;
-    private static final int MIN_PASSWORD_LENGTH = 8;
-    private static final int MAX_PASSWORD_LENGTH = 64;
+    static final int MIN_PASSWORD_LENGTH = 8;
+    static final int MAX_PASSWORD_LENGTH = 64;
 
     private static final Pattern USERNAME = Pattern.compile("[A-Za-z0-9_]{3,20}");
-    private static final Pattern EMAIL = Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}");
+    static final Pattern EMAIL = Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}");
 
     private final UserService userService;
 

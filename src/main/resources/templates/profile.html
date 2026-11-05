@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Личный кабинет')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container page">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <h1>Личный кабинет</h1>
+
+    <div class="card coupon profile-data" id="profile-data">
+        <div class="coupon__row">
+            <span>Логин</span>
+            <b id="profile-username" th:text="${user.username}">ivan_petrov</b>
+        </div>
+        <div class="coupon__row">
+            <span>Email</span>
+            <b id="profile-email" th:text="${user.email}">ivan@example.com</b>
+        </div>
+        <div class="coupon__row">
+            <span>Дата рождения</span>
+            <b id="profile-birth-date" th:text="${#temporals.format(user.birthDate, 'dd.MM.yyyy')}">15.03.1998</b>
+        </div>
+        <div class="coupon__row">
+            <span>Дата регистрации</span>
+            <b id="profile-created" th:text="${#temporals.format(user.createdAt, 'dd.MM.yyyy')}">01.10.2026</b>
+        </div>
+        <div class="coupon__row">
+            <span>Баланс</span>
+            <b id="profile-balance" th:text="${@fmt.money(user.balance)}">0.00 ₽</b>
+        </div>
+        <div class="coupon__row">
+            <span>Сделано ставок</span>
+            <b id="profile-bets" th:text="${betsCount}">0</b>
+        </div>
+    </div>
+
+    <div class="two-columns">
+        <form th:action="@{/profile/email}" th:object="${emailForm}" method="post" class="card form" id="email-form"
+              novalidate>
+            <h2>Изменить email</h2>
+            <div class="form-group">
+                <label for="email">Новый email</label>
+                <input type="text" th:field="*{email}" autocomplete="email" placeholder="ivan@example.com">
+                <div class="field-error" id="email-error" th:if="${#fields.hasErrors('email')}"
+                     th:errors="*{email}"></div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" id="change-email-btn">Сохранить email</button>
+        </form>
+
+        <form th:action="@{/profile/password}" th:object="${passwordForm}" method="post" class="card form"
+              id="password-form" novalidate>
+            <h2>Изменить пароль</h2>
+            <div class="form-group">
+                <label for="currentPassword">Текущий пароль</label>
+                <input type="password" id="currentPassword" name="currentPassword" autocomplete="current-password">
+                <div class="field-error" id="currentPassword-error" th:if="${#fields.hasErrors('currentPassword')}"
+                     th:errors="*{currentPassword}"></div>
+            </div>
+            <div class="form-group">
+                <label for="newPassword">Новый пароль</label>
+                <input type="password" id="newPassword" name="newPassword" autocomplete="new-password"
+                       placeholder="не менее 8 символов">
+                <div class="field-error" id="newPassword-error" th:if="${#fields.hasErrors('newPassword')}"
+                     th:errors="*{newPassword}"></div>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Повтор нового пароля</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password">
+                <div class="field-error" id="confirmPassword-error" th:if="${#fields.hasErrors('confirmPassword')}"
+                     th:errors="*{confirmPassword}"></div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" id="change-password-btn">Сохранить пароль</button>
+        </form>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
