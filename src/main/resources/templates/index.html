@@ -9,15 +9,28 @@
 
     <h1>Линия</h1>
 
+    <form th:action="@{/}" method="get" class="search-form" id="search-form">
+        <input type="hidden" name="sport" th:if="${selectedSport != null}" th:value="${selectedSport}">
+        <input type="text" name="q" id="search-input" th:value="${query}" maxlength="50" autocomplete="off"
+               placeholder="Поиск по названию команды">
+        <button type="submit" class="btn btn-primary" id="search-btn">Найти</button>
+        <a th:if="${query != null}" class="btn btn-outline" id="search-reset"
+           th:href="${selectedSport == null} ? @{/} : @{/(sport=${selectedSport})}">Сбросить</a>
+    </form>
+    <div class="field-error search-error" id="search-error" th:if="${searchError}" th:text="${searchError}"></div>
+
+    <!-- the chosen sport and the search query are kept when switching between them -->
     <div class="sport-tabs" id="sport-tabs">
-        <a th:href="@{/}" id="sport-ALL" class="tab"
+        <a th:href="${appliedQuery == null} ? @{/} : @{/(q=${appliedQuery})}" id="sport-ALL" class="tab"
            th:classappend="${selectedSport == null} ? 'active'">Все</a>
-        <a th:each="s : ${sports}" th:href="@{/(sport=${s})}" th:id="'sport-' + ${s}" class="tab"
+        <a th:each="s : ${sports}" th:id="'sport-' + ${s}" class="tab"
+           th:href="${appliedQuery == null} ? @{/(sport=${s})} : @{/(sport=${s},q=${appliedQuery})}"
            th:classappend="${selectedSport == s} ? 'active'" th:text="${s.title}">Футбол</a>
     </div>
 
     <div th:if="${#lists.isEmpty(events)}" class="empty-state" id="no-events"
-         th:text="${selectedSport == null} ? 'В линии пока нет событий' : 'Нет доступных событий по выбранному виду спорта'">
+         th:text="${appliedQuery != null} ? |По запросу «${appliedQuery}» ничего не найдено|
+                  : (${selectedSport == null} ? 'В линии пока нет событий' : 'Нет доступных событий по выбранному виду спорта')">
         Нет событий
     </div>
 

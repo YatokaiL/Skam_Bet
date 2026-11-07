@@ -53,6 +53,23 @@ public abstract class BasePage {
         }
     }
 
+    /**
+     * Clicks and waits until the browser has left the current page (a form is sent, a link is followed).
+     */
+    protected void clickAndWaitForReload(By locator) {
+        WebElement html = driver.findElement(By.tagName("html"));
+        click(locator);
+        wait.until(d -> {
+            try {
+                html.isEnabled();
+                return false;
+            } catch (WebDriverException e) {
+                // stale element, or "node does not belong to the document" in chrome 156+ - the page is new
+                return true;
+            }
+        });
+    }
+
     protected List<String> texts(By locator) {
         return driver.findElements(locator).stream()
                 .map(WebElement::getText)

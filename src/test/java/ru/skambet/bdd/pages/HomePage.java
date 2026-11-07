@@ -16,6 +16,7 @@ import java.util.List;
 public class HomePage extends BasePage {
 
     private static final By EVENT_TITLES = By.cssSelector(".event-row .event-title");
+    private static final By SEARCH_INPUT = By.id("search-input");
 
     public HomePage(WebDriver driver) {
         super(driver);
@@ -25,6 +26,21 @@ public class HomePage extends BasePage {
         By tab = By.id("sport-" + sportCode(title));
         click(tab);
         wait.until(ExpectedConditions.attributeContains(tab, "class", "active"));
+    }
+
+    // feature 11
+
+    public void search(String query) {
+        type(SEARCH_INPUT, query);
+        clickAndWaitForReload(By.id("search-btn"));
+    }
+
+    public void resetSearch() {
+        clickAndWaitForReload(By.id("search-reset"));
+    }
+
+    public String searchQuery() {
+        return visible(SEARCH_INPUT).getDomProperty("value");
     }
 
     public String activeTab() {
