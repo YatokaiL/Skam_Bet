@@ -37,18 +37,15 @@ public class Hooks {
         }
     }
 
+    /**
+     * Serenity keeps screenshots of every step in its report, the cucumber html report gets one on failure.
+     * The browser itself is closed by Serenity.
+     */
     @After
-    public void closeBrowser(Scenario scenario) {
-        if (!browser.isOpened()) {
-            return;
-        }
-        try {
-            if (scenario.isFailed()) {
-                byte[] screenshot = ((TakesScreenshot) browser.driver()).getScreenshotAs(OutputType.BYTES);
-                scenario.attach(screenshot, "image/png", scenario.getName());
-            }
-        } finally {
-            browser.quit();
+    public void attachScreenshotOnFailure(Scenario scenario) {
+        if (scenario.isFailed() && browser.isOpened()) {
+            byte[] screenshot = ((TakesScreenshot) browser.driver()).getScreenshotAs(OutputType.BYTES);
+            scenario.attach(screenshot, "image/png", scenario.getName());
         }
     }
 }

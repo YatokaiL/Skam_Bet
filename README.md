@@ -6,8 +6,10 @@
 ![Gradle](https://img.shields.io/badge/Gradle-8.14-02303a)
 ![Cucumber](https://img.shields.io/badge/Cucumber-7-23d96c)
 ![Selenium](https://img.shields.io/badge/Selenium-4-43b02a)
+![Serenity BDD](https://img.shields.io/badge/Serenity%20BDD-4-3ba4d8)
 
 Веб-приложение букмекерской конторы (учебный проект) и UI-автотесты к нему на Cucumber + Selenium WebDriver.
+Ход выполнения тестов визуализируется отчётом Serenity BDD (живая документация из книги «BDD в действии»).
 
 ![Линия событий](.github/images/line.png)
 
@@ -42,6 +44,7 @@
 - PostgreSQL 16, миграции Flyway
 - Docker, Docker Compose
 - Cucumber 7, Selenium WebDriver 4, JUnit 5, AssertJ, Testcontainers
+- Serenity BDD 4 — отчёт о выполнении тестов со скриншотами каждого шага
 
 ## Запуск
 
@@ -94,8 +97,29 @@ Feature-файлы лежат в `src/test/resources/features`, шаги и page
 ./gradlew test -Dcucumber.filter.tags=@bet -Dstep.delay=1500
 ```
 
-Отчёты: `build/cucumber-reports/cucumber.html` (при падении к сценарию прикладывается скриншот)
-и `build/reports/tests/test/index.html`.
+В PowerShell (терминал IntelliJ IDEA на Windows) параметры `-D...` нужно брать в кавычки:
+`./gradlew test "-Dcucumber.filter.tags=@bet"`. Если русский текст в консоли выглядит как `╨║╨░`,
+перед запуском выполните `chcp 65001`.
+
+### Отчёт Serenity BDD
+
+После каждого `./gradlew test` (даже если что-то упало) Gradle собирает отчёт Serenity:
+
+```bash
+start build/serenity/index.html
+```
+
+- **Overall Test Results** — сколько сценариев прошло, упало, сколько длились;
+- **Requirements / Features** — фичи из `src/test/resources/features` как живая документация: какие сценарии
+  есть у каждой функции и в каком они состоянии;
+- в каждом сценарии — все шаги Gherkin со статусом, временем и **скриншотом браузера после каждого шага**.
+
+Отчёт можно пересобрать без запуска тестов: `./gradlew aggregate`.
+Браузером управляет Serenity (открывает на сценарий и закрывает после него), а создаётся он нашим
+`DriverFactory` через `SkamBetDriverSource` — поэтому параметры `-Dheadless` и `-Dbrowser` работают как раньше.
+
+Ещё есть отчёт Cucumber `build/cucumber-reports/cucumber.html` (при падении к сценарию прикладывается скриншот)
+и отчёт Gradle `build/reports/tests/test/index.html`.
 
 ## Структура
 
@@ -112,7 +136,7 @@ src/main/resources
 src/test/java/ru/skambet/bdd
     pages/         page objects
     steps/         step definitions
-    support/       браузер, хуки, тестовые данные, Testcontainers
+    support/       браузер (через Serenity), хуки, тестовые данные, Testcontainers
 src/test/resources/features   feature-файлы
 docs/                         фичи и сценарии прецедентов
 ```

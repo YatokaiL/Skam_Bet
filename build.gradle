@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.1'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'net.serenity-bdd.serenity-gradle-plugin' version '4.3.2'
 }
 
 group = 'ru.skambet'
@@ -18,10 +19,14 @@ repositories {
 }
 
 ext {
-    cucumberVersion = '7.20.1'
+    // versions serenity 4.3.2 is built with
+    serenityVersion = '4.3.2'
+    cucumberVersion = '7.31.0'
     // newer versions than spring boot 3.4 brings, older testcontainers can't talk to docker engine 29
-    set('selenium.version', '4.27.0')
+    set('selenium.version', '4.38.0')
     set('testcontainers.version', '1.21.4')
+    // cucumber 7.31 needs junit platform 1.13+
+    set('junit-jupiter.version', '5.13.4')
 }
 
 dependencies {
@@ -42,6 +47,8 @@ dependencies {
     testImplementation 'io.cucumber:cucumber-junit-platform-engine'
     testImplementation 'org.junit.platform:junit-platform-suite'
     testImplementation 'org.seleniumhq.selenium:selenium-java'
+    testImplementation "net.serenity-bdd:serenity-core:${serenityVersion}"
+    testImplementation "net.serenity-bdd:serenity-cucumber:${serenityVersion}"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -76,4 +83,11 @@ tasks.named('test') {
         events 'passed', 'skipped', 'failed'
         exceptionFormat = 'full'
     }
+
+    // serenity report (build/serenity/index.html) is built after every test run, even a failed one
+    finalizedBy 'aggregate'
+}
+
+serenity {
+    outputDirectory = 'build/serenity'
 }

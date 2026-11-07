@@ -1,5 +1,7 @@
 .gradle/
 build/
+# serenity gradle plugin creates an empty target/site/serenity, the report itself is in build/serenity
+target/
 !gradle/wrapper/gradle-wrapper.jar
 *.class
 *.log
