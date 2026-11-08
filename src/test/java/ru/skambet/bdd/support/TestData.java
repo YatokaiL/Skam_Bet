@@ -45,7 +45,7 @@ public class TestData {
     }
 
     public void clear() {
-        jdbcTemplate.execute("TRUNCATE express_legs, express_bets, withdrawals, bets, deposits, events, users "
+        jdbcTemplate.execute("TRUNCATE favorites, express_legs, express_bets, withdrawals, bets, deposits, events, users "
                 + "RESTART IDENTITY CASCADE");
     }
 
@@ -143,6 +143,12 @@ public class TestData {
                 "SELECT COUNT(*) FROM withdrawals w JOIN users u ON u.id = w.user_id WHERE u.username = ?",
                 Integer.class, username);
         return count == null ? 0 : count;
+    }
+
+    public void addFavorite(String username, String eventTitle) {
+        jdbcTemplate.update("INSERT INTO favorites (user_id, event_id, created_at) "
+                        + "SELECT u.id, ?, now() FROM users u WHERE u.username = ?",
+                eventByTitle(eventTitle).getId(), username);
     }
 
     public String emailInDb(String username) {

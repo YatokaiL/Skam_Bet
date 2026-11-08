@@ -57,8 +57,12 @@ public abstract class BasePage {
      * Clicks and waits until the browser has left the current page (a form is sent, a link is followed).
      */
     protected void clickAndWaitForReload(By locator) {
+        clickAndWaitForReload(wait.until(ExpectedConditions.elementToBeClickable(locator)));
+    }
+
+    protected void clickAndWaitForReload(WebElement element) {
         WebElement html = driver.findElement(By.tagName("html"));
-        click(locator);
+        element.click();
         wait.until(d -> {
             try {
                 html.isEnabled();

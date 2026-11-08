@@ -28,6 +28,7 @@
 | 9 | Личный кабинет | данные пользователя, смена email и пароля |
 | 10 | Отмена ставки | отмена до начала события с возвратом денег на баланс |
 | 11 | Поиск событий | поиск по части названия команды в линии, вместе с фильтром по виду спорта |
+| 12 | Избранное | звёздочка у события и вкладка «Избранное» в линии |
 
 Документация:
 
@@ -90,7 +91,7 @@ Feature-файлы лежат в `src/test/resources/features`, шаги и page
 | `-Dheadless=true` | без окна браузера |
 | `-Dbrowser=edge` | Edge вместо Chrome |
 | `-Dstep.delay=1500` | пауза после каждого шага в мс, чтобы было видно, что делает тест |
-| `-Dcucumber.filter.tags=@bet` | одна фича: `@registration`, `@login`, `@events`, `@deposit`, `@bet`, `@settlement`, `@withdrawal`, `@express`, `@profile`, `@cancel`, `@search` |
+| `-Dcucumber.filter.tags=@bet` | одна фича: `@registration`, `@login`, `@events`, `@deposit`, `@bet`, `@settlement`, `@withdrawal`, `@express`, `@profile`, `@cancel`, `@search`, `@favorites` |
 
 Например, посмотреть оформление ставки в замедленном режиме:
 

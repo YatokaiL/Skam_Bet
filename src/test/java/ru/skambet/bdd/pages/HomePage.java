@@ -43,6 +43,22 @@ public class HomePage extends BasePage {
         return visible(SEARCH_INPUT).getDomProperty("value");
     }
 
+    // feature 12
+
+    public void toggleFavorite(String eventTitle) {
+        clickAndWaitForReload(eventRow(eventTitle).findElement(By.className("fav-btn")));
+    }
+
+    public boolean isFavorite(String eventTitle) {
+        return "true".equals(eventRow(eventTitle).findElement(By.className("fav-btn")).getDomAttribute("data-favorite"));
+    }
+
+    public boolean hasFavorites() {
+        visible(By.tagName("h1"));
+        return !driver.findElements(By.className("fav-btn")).isEmpty()
+                || !driver.findElements(By.id("sport-FAVORITES")).isEmpty();
+    }
+
     public String activeTab() {
         return visible(By.cssSelector(".sport-tabs .tab.active")).getText().trim();
     }
@@ -82,6 +98,9 @@ public class HomePage extends BasePage {
     private static String sportCode(String title) {
         if (title.equals("Все")) {
             return "ALL";
+        }
+        if (title.equals("Избранное")) {
+            return "FAVORITES";
         }
         return Sport.byTitle(title)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown sport: " + title))
