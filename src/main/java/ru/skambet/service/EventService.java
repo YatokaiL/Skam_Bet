@@ -51,6 +51,17 @@ public class EventService {
                 .toList();
     }
 
+    /**
+     * Feature 13: settled events, the last settled first. If sport is null - all sports.
+     */
+    @Transactional(readOnly = true)
+    public List<Event> getResults(Sport sport) {
+        if (sport == null) {
+            return eventRepository.findByResultIsNotNullOrderBySettledAtDescIdDesc();
+        }
+        return eventRepository.findBySportAndResultIsNotNullOrderBySettledAtDescIdDesc(sport);
+    }
+
     @Transactional(readOnly = true)
     public Optional<Event> findById(Long id) {
         return eventRepository.findById(id);

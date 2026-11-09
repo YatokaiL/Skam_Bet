@@ -145,6 +145,14 @@ public class TestData {
         return count == null ? 0 : count;
     }
 
+    /**
+     * Feature 13: the event got its result (without settling bets - only for the results page).
+     */
+    public void settleEvent(String eventTitle, Outcome result) {
+        jdbcTemplate.update("UPDATE events SET result = ?, settled_at = clock_timestamp() WHERE id = ?",
+                result.name(), eventByTitle(eventTitle).getId());
+    }
+
     public void addFavorite(String username, String eventTitle) {
         jdbcTemplate.update("INSERT INTO favorites (user_id, event_id, created_at) "
                         + "SELECT u.id, ?, now() FROM users u WHERE u.username = ?",

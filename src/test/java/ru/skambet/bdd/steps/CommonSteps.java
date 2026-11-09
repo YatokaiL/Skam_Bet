@@ -14,16 +14,17 @@ import java.util.Map;
  */
 public class CommonSteps {
 
-    private static final Map<String, String> PAGES = Map.of(
-            "Линия", "/",
-            "Вход", "/login",
-            "Регистрация", "/register",
-            "Пополнение баланса", "/deposit",
-            "Мои ставки", "/bets/my",
-            "Экспресс", "/express",
-            "Вывод средств", "/withdraw",
-            "Личный кабинет", "/profile",
-            "Расчёт событий", "/admin/events");
+    private static final Map<String, String> PAGES = Map.ofEntries(
+            Map.entry("Линия", "/"),
+            Map.entry("Вход", "/login"),
+            Map.entry("Регистрация", "/register"),
+            Map.entry("Пополнение баланса", "/deposit"),
+            Map.entry("Мои ставки", "/bets/my"),
+            Map.entry("Экспресс", "/express"),
+            Map.entry("Вывод средств", "/withdraw"),
+            Map.entry("Личный кабинет", "/profile"),
+            Map.entry("Расчёт событий", "/admin/events"),
+            Map.entry("Результаты", "/results"));
 
     private final Browser browser;
 

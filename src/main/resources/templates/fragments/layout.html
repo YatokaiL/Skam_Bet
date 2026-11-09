@@ -16,6 +16,7 @@
 
         <nav class="nav">
             <a th:href="@{/}" id="nav-line">Линия</a>
+            <a th:href="@{/results}" id="nav-results">Результаты</a>
             <a th:if="${currentUser != null}" th:href="@{/express}" id="nav-express">Экспресс</a>
             <a th:if="${currentUser != null}" th:href="@{/bets/my}" id="nav-my-bets">Мои ставки</a>
             <a th:if="${currentUser != null}" th:href="@{/deposit}" id="nav-deposit">Пополнить</a>

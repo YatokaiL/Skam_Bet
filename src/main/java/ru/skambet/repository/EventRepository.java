@@ -23,6 +23,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     List<Event> findByResultIsNotNullOrderBySettledAtDescIdDesc();
 
+    // feature 13: results of one sport
+    List<Event> findBySportAndResultIsNotNullOrderBySettledAtDescIdDesc(Sport sport);
+
     /**
      * select ... for update - two administrators must not settle the same event at once
      */

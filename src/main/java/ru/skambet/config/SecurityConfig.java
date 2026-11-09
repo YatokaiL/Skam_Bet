@@ -20,6 +20,8 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/register", "/error").permitAll()
+                        // feature 13: results are public, like the line
+                        .requestMatchers("/results").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/favicon.ico").permitAll()
                         // feature 6: settlement of events
                         .requestMatchers("/admin/**").hasRole("ADMIN")

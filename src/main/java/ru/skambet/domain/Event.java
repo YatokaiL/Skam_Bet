@@ -95,6 +95,20 @@ public class Event {
                 .toList();
     }
 
+    /**
+     * Feature 13: who won - a team name or "ничья".
+     */
+    public String getResultTitle() {
+        if (result == null) {
+            return null;
+        }
+        return switch (result) {
+            case HOME -> homeTeam;
+            case DRAW -> "ничья";
+            case AWAY -> awayTeam;
+        };
+    }
+
     public void settle(Outcome result) {
         this.result = result;
         this.settledAt = LocalDateTime.now();

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Результаты')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container page">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <h1>Результаты</h1>
+
+    <div class="sport-tabs" id="sport-tabs">
+        <a th:href="@{/results}" id="sport-ALL" class="tab"
+           th:classappend="${selectedSport == null} ? 'active'">Все</a>
+        <a th:each="s : ${sports}" th:href="@{/results(sport=${s})}" th:id="'sport-' + ${s}" class="tab"
+           th:classappend="${selectedSport == s} ? 'active'" th:text="${s.title}">Футбол</a>
+    </div>
+
+    <div th:if="${#lists.isEmpty(events)}" class="empty-state" id="no-results"
+         th:text="${selectedSport == null} ? 'Результатов пока нет' : 'Нет результатов по выбранному виду спорта'">
+        Результатов пока нет
+    </div>
+
+    <table class="table events" id="results-table" th:unless="${#lists.isEmpty(events)}">
+        <thead>
+        <tr>
+            <th>Матч</th>
+            <th>Вид спорта</th>
+            <th>Событие</th>
+            <th>Результат</th>
+            <th>Коэффициент</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="e : ${events}" class="result-row" th:attr="data-event-id=${e.id}">
+            <td class="event-time" th:text="${#temporals.format(e.startTime, 'dd.MM.yyyy HH:mm')}">01.10.2026 19:00</td>
+            <td class="event-sport" th:text="${e.sport.title}">Футбол</td>
+            <td class="event-title" th:text="${e.title}">Спартак — ЦСКА</td>
+            <td class="result-outcome">
+                <span class="badge badge--won" th:text="|${e.result.label} · ${e.resultTitle}|">П1 · Спартак</span>
+            </td>
+            <td class="result-odds" th:text="${@fmt.odds(e.getOdds(e.result))}">2.10</td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
