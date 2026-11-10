@@ -9,8 +9,27 @@
 
     <h1>Мои ставки</h1>
 
-    <div class="empty-state" id="no-bets" th:if="${#lists.isEmpty(bets) and #lists.isEmpty(expresses)}">
+    <div class="empty-state" id="no-bets" th:if="${totalCount == 0}">
         Вы ещё не сделали ни одной ставки. <a th:href="@{/}">Перейти к линии</a>
+    </div>
+
+    <!-- feature 14: filter by status -->
+    <div class="sport-tabs" id="status-tabs" th:if="${totalCount > 0}">
+        <a th:href="@{/bets/my}" id="status-ALL" class="tab" th:classappend="${selectedStatus == null} ? 'active'"
+           th:text="|Все (${totalCount})|">Все (0)</a>
+        <a th:each="s : ${statuses}" th:href="@{/bets/my(status=${s})}" th:id="'status-' + ${s}" class="tab"
+           th:classappend="${selectedStatus == s} ? 'active'" th:text="|${s.title} (${counts.get(s)})|">В игре (0)</a>
+    </div>
+
+    <div class="bets-summary" id="bets-summary" th:if="${totalCount > 0}">
+        Поставлено: <b id="summary-placed" th:text="${@fmt.money(placed)}">0.00 ₽</b>
+        <span class="bets-summary__sep">·</span>
+        Выиграно: <b id="summary-won" th:text="${@fmt.money(won)}">0.00 ₽</b>
+    </div>
+
+    <div class="empty-state" id="no-bets-with-status"
+         th:if="${totalCount > 0 and #lists.isEmpty(bets) and #lists.isEmpty(expresses)}">
+        Нет ставок с выбранным статусом
     </div>
 
     <table class="table" id="bets-table" th:unless="${#lists.isEmpty(bets)}">
@@ -41,6 +60,7 @@
             <td class="bet-actions">
                 <form th:if="${b.cancellable}" th:action="@{/bets/{id}/cancel(id=${b.id})}" method="post"
                       class="inline-form">
+                    <input type="hidden" name="status" th:if="${selectedStatus != null}" th:value="${selectedStatus}">
                     <button type="submit" class="btn btn-outline btn-small">Отменить</button>
                 </form>
             </td>

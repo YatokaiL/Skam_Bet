@@ -126,7 +126,7 @@ public class SettlementSteps {
                 .orElseThrow(() -> new IllegalArgumentException("Unknown outcome: " + label));
     }
 
-    private static BetStatus status(String title) {
+    static BetStatus status(String title) {
         return Arrays.stream(BetStatus.values())
                 .filter(s -> s.getTitle().equals(title))
                 .findFirst()

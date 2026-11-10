@@ -610,3 +610,18 @@ button.odd {
 .fav-btn--active {
     color: var(--accent);
 }
+
+/* feature 14: filter of my bets */
+
+.bets-summary {
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.bets-summary b {
+    color: var(--text);
+}
+
+.bets-summary__sep {
+    margin: 0 8px;
+}

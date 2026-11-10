@@ -3,14 +3,19 @@ package ru.skambet.bdd.pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MyBetsPage extends BasePage {
 
     private static final By ROWS = By.cssSelector("#bets-table .bet-row");
+    // text of a status tab: "В игре (2)"
+    private static final Pattern TAB = Pattern.compile("(.+) \\((\\d+)\\)");
 
     // column name from the feature file -> css class of the cell
     private static final Map<String, String> COLUMNS = Map.of(
@@ -26,7 +31,8 @@ public class MyBetsPage extends BasePage {
     }
 
     public List<Map<String, String>> bets() {
-        visible(By.id("bets-table"));
+        // the table is not shown when the chosen status has no single bets
+        visible(By.tagName("h1"));
         return driver.findElements(ROWS).stream().map(MyBetsPage::toMap).toList();
     }
 
@@ -64,7 +70,7 @@ public class MyBetsPage extends BasePage {
             "статус", "express-status");
 
     public List<Map<String, String>> expresses() {
-        visible(By.id("expresses-table"));
+        visible(By.tagName("h1"));
         return driver.findElements(By.cssSelector("#expresses-table .express-row")).stream()
                 .map(row -> {
                     Map<String, String> express = new LinkedHashMap<>();
@@ -73,5 +79,41 @@ public class MyBetsPage extends BasePage {
                     return express;
                 })
                 .toList();
+    }
+
+    // feature 14: filter by status
+
+    public void selectStatus(String title) {
+        By tab = By.xpath("//div[@id='status-tabs']/a[starts-with(normalize-space(), '" + title + " (')]");
+        clickAndWaitForReload(tab);
+        wait.until(ExpectedConditions.attributeContains(tab, "class", "active"));
+    }
+
+    /**
+     * @return tab title -> number in brackets, e.g. "В игре" -> 2
+     */
+    public Map<String, Integer> statusCounts() {
+        Map<String, Integer> counts = new LinkedHashMap<>();
+        for (String text : texts(By.cssSelector("#status-tabs .tab"))) {
+            Matcher m = TAB.matcher(text);
+            if (!m.matches()) {
+                throw new IllegalStateException("Unexpected tab text: " + text);
+            }
+            counts.put(m.group(1), Integer.parseInt(m.group(2)));
+        }
+        return counts;
+    }
+
+    public String activeStatus() {
+        String text = visible(By.cssSelector("#status-tabs .tab.active")).getText().trim();
+        return text.substring(0, text.lastIndexOf(" ("));
+    }
+
+    public String placed() {
+        return visible(By.id("summary-placed")).getText().trim();
+    }
+
+    public String won() {
+        return visible(By.id("summary-won")).getText().trim();
     }
 }

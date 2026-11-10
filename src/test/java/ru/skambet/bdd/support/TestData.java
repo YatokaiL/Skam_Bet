@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import ru.skambet.domain.Bet;
+import ru.skambet.domain.BetStatus;
 import ru.skambet.domain.Event;
 import ru.skambet.domain.ExpressBet;
 import ru.skambet.domain.Outcome;
@@ -151,6 +152,18 @@ public class TestData {
     public void settleEvent(String eventTitle, Outcome result) {
         jdbcTemplate.update("UPDATE events SET result = ?, settled_at = clock_timestamp() WHERE id = ?",
                 result.name(), eventByTitle(eventTitle).getId());
+    }
+
+    /**
+     * Feature 14: status of a bet without the settlement of the event (balance is not changed).
+     */
+    public void setBetStatus(String username, String eventTitle, BetStatus status) {
+        int updated = jdbcTemplate.update("UPDATE bets SET status = ? WHERE event_id = ? "
+                        + "AND user_id = (SELECT id FROM users WHERE username = ?)",
+                status.name(), eventByTitle(eventTitle).getId(), username);
+        if (updated == 0) {
+            throw new IllegalArgumentException("No bet of " + username + " on " + eventTitle);
+        }
     }
 
     public void addFavorite(String username, String eventTitle) {

@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.skambet.domain.Bet;
+import ru.skambet.domain.BetStatus;
 import ru.skambet.domain.Event;
+import ru.skambet.domain.ExpressBet;
 import ru.skambet.domain.Outcome;
 import ru.skambet.service.BetRejectedException;
 import ru.skambet.service.BetService;
@@ -21,7 +23,11 @@ import ru.skambet.web.form.Amounts;
 import ru.skambet.web.form.BetForm;
 import ru.skambet.web.form.BetFormValidator;
 
+import java.math.BigDecimal;
 import java.security.Principal;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -90,21 +96,57 @@ public class BetController {
     }
 
     @GetMapping("/bets/my")
-    public String myBets(Principal principal, Model model) {
-        model.addAttribute("bets", betService.getUserBets(principal.getName()));
-        model.addAttribute("expresses", expressService.getUserExpresses(principal.getName()));
+    public String myBets(@RequestParam(required = false) BetStatus status, Principal principal, Model model) {
+        List<Bet> bets = betService.getUserBets(principal.getName());
+        List<ExpressBet> expresses = expressService.getUserExpresses(principal.getName());
+
+        // feature 14: counters of the tabs are over all bets, the tables and the summary - over the chosen tab
+        Map<BetStatus, Long> counts = new EnumMap<>(BetStatus.class);
+        for (BetStatus s : BetStatus.values()) {
+            counts.put(s, bets.stream().filter(b -> b.getStatus() == s).count()
+                    + expresses.stream().filter(x -> x.getStatus() == s).count());
+        }
+        List<Bet> shownBets = bets.stream().filter(b -> status == null || b.getStatus() == status).toList();
+        List<ExpressBet> shownExpresses = expresses.stream()
+                .filter(x -> status == null || x.getStatus() == status).toList();
+
+        // cancelled bets were returned to the balance, so they are not counted as placed
+        BigDecimal placed = BigDecimal.ZERO;
+        BigDecimal won = BigDecimal.ZERO;
+        for (Bet b : shownBets) {
+            placed = b.getStatus() == BetStatus.CANCELLED ? placed : placed.add(b.getAmount());
+            won = b.getStatus() == BetStatus.WON ? won.add(b.getPotentialWin()) : won;
+        }
+        for (ExpressBet x : shownExpresses) {
+            placed = x.getStatus() == BetStatus.CANCELLED ? placed : placed.add(x.getAmount());
+            won = x.getStatus() == BetStatus.WON ? won.add(x.getPotentialWin()) : won;
+        }
+
+        model.addAttribute("bets", shownBets);
+        model.addAttribute("expresses", shownExpresses);
+        model.addAttribute("statuses", BetStatus.values());
+        model.addAttribute("counts", counts);
+        model.addAttribute("totalCount", bets.size() + expresses.size());
+        model.addAttribute("selectedStatus", status);
+        model.addAttribute("placed", placed);
+        model.addAttribute("won", won);
         return "bets/my";
     }
 
     // feature 10
     @PostMapping("/bets/{id}/cancel")
-    public String cancelBet(@PathVariable Long id, Principal principal, RedirectAttributes redirect) {
+    public String cancelBet(@PathVariable Long id, @RequestParam(required = false) BetStatus status,
+                            Principal principal, RedirectAttributes redirect) {
         try {
             Bet bet = betService.cancelBet(principal.getName(), id);
             redirect.addFlashAttribute("success",
                     "Ставка отменена, " + formats.money(bet.getAmount()) + " возвращены на баланс");
         } catch (BetRejectedException e) {
             redirect.addFlashAttribute("error", e.getMessage());
+        }
+        // stay on the same status tab
+        if (status != null) {
+            redirect.addAttribute("status", status);
         }
         return "redirect:/bets/my";
     }
