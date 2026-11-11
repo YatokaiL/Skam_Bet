@@ -46,8 +46,8 @@ public class TestData {
     }
 
     public void clear() {
-        jdbcTemplate.execute("TRUNCATE favorites, express_legs, express_bets, withdrawals, bets, deposits, events, users "
-                + "RESTART IDENTITY CASCADE");
+        jdbcTemplate.execute("TRUNCATE account_operations, favorites, express_legs, express_bets, withdrawals, bets, "
+                + "deposits, events, users RESTART IDENTITY CASCADE");
     }
 
     public User createUser(String username, String password, BigDecimal balance) {

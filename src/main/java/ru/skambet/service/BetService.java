@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.skambet.domain.Bet;
 import ru.skambet.domain.BetStatus;
 import ru.skambet.domain.Event;
+import ru.skambet.domain.OperationType;
 import ru.skambet.domain.Outcome;
 import ru.skambet.domain.User;
 import ru.skambet.repository.BetRepository;
@@ -23,11 +24,14 @@ public class BetService {
     private final BetRepository betRepository;
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final OperationService operationService;
 
-    public BetService(BetRepository betRepository, EventRepository eventRepository, UserRepository userRepository) {
+    public BetService(BetRepository betRepository, EventRepository eventRepository, UserRepository userRepository,
+                      OperationService operationService) {
         this.betRepository = betRepository;
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
+        this.operationService = operationService;
     }
 
     @Transactional
@@ -49,7 +53,9 @@ public class BetService {
         }
 
         user.withdraw(amount);
-        return betRepository.save(new Bet(user, event, outcome, odds, amount));
+        Bet bet = betRepository.save(new Bet(user, event, outcome, odds, amount));
+        operationService.record(user, OperationType.BET, amount.negate(), describe(bet));
+        return bet;
     }
 
     @Transactional(readOnly = true)
@@ -82,6 +88,14 @@ public class BetService {
         }
         user.deposit(bet.getAmount());
         bet.cancel();
+        operationService.record(user, OperationType.REFUND, bet.getAmount(), "Отмена: " + describe(bet));
         return bet;
+    }
+
+    /**
+     * "Ставка П1 на «Спартак — ЦСКА»" - for the history of operations.
+     */
+    public static String describe(Bet bet) {
+        return "Ставка " + bet.getOutcome().getLabel() + " на «" + bet.getEvent().getTitle() + "»";
     }
 }

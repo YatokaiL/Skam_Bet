@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.skambet.domain.Bet;
 import ru.skambet.domain.BetStatus;
 import ru.skambet.domain.Event;
+import ru.skambet.domain.OperationType;
 import ru.skambet.domain.ExpressBet;
 import ru.skambet.domain.Outcome;
 import ru.skambet.domain.User;
@@ -28,13 +29,16 @@ public class SettlementService {
     private final BetRepository betRepository;
     private final ExpressBetRepository expressBetRepository;
     private final UserRepository userRepository;
+    private final OperationService operationService;
 
     public SettlementService(EventRepository eventRepository, BetRepository betRepository,
-                             ExpressBetRepository expressBetRepository, UserRepository userRepository) {
+                             ExpressBetRepository expressBetRepository, UserRepository userRepository,
+                             OperationService operationService) {
         this.eventRepository = eventRepository;
         this.betRepository = betRepository;
         this.expressBetRepository = expressBetRepository;
         this.userRepository = userRepository;
+        this.operationService = operationService;
     }
 
     @Transactional(readOnly = true)
@@ -66,21 +70,23 @@ public class SettlementService {
         for (Bet bet : betRepository.findByEventIdAndStatus(eventId, BetStatus.PENDING)) {
             bet.settle(result);
             if (bet.getStatus() == BetStatus.WON) {
-                payOut(bet.getUser(), bet.getPotentialWin());
+                payOut(bet.getUser(), bet.getPotentialWin(), "Выигрыш: " + BetService.describe(bet));
             }
         }
 
         for (ExpressBet express : expressBetRepository.findByEventAndStatus(eventId, BetStatus.PENDING)) {
             express.settle();
             if (express.getStatus() == BetStatus.WON) {
-                payOut(express.getUser(), express.getPotentialWin());
+                payOut(express.getUser(), express.getPotentialWin(),
+                        "Выигрыш: " + ExpressService.describe(express));
             }
         }
         return event;
     }
 
     // users were loaded together with the bets, without a lock - so the balance is changed in the db directly
-    private void payOut(User owner, BigDecimal amount) {
+    private void payOut(User owner, BigDecimal amount, String description) {
         userRepository.addToBalance(owner.getId(), amount);
+        operationService.recordAfterUpdate(owner, OperationType.WIN, amount, description);
     }
 }

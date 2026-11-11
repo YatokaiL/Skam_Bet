@@ -29,6 +29,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("update User u set u.balance = u.balance + :amount where u.id = :id")
     void addToBalance(@Param("id") Long id, @Param("amount") BigDecimal amount);
 
+    /**
+     * Current balance right from the db, bypassing the user object of the transaction (feature 15).
+     */
+    @Query(value = "select balance from users where id = :id", nativeQuery = true)
+    BigDecimal balanceOf(@Param("id") Long id);
+
     boolean existsByUsernameIgnoreCase(String username);
 
     boolean existsByEmailIgnoreCase(String email);

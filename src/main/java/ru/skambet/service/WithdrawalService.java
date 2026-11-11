@@ -2,6 +2,7 @@ package ru.skambet.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.skambet.domain.OperationType;
 import ru.skambet.domain.User;
 import ru.skambet.domain.Withdrawal;
 import ru.skambet.repository.UserRepository;
@@ -22,10 +23,13 @@ public class WithdrawalService {
 
     private final UserRepository userRepository;
     private final WithdrawalRepository withdrawalRepository;
+    private final OperationService operationService;
 
-    public WithdrawalService(UserRepository userRepository, WithdrawalRepository withdrawalRepository) {
+    public WithdrawalService(UserRepository userRepository, WithdrawalRepository withdrawalRepository,
+                             OperationService operationService) {
         this.userRepository = userRepository;
         this.withdrawalRepository = withdrawalRepository;
+        this.operationService = operationService;
     }
 
     @Transactional
@@ -36,7 +40,11 @@ public class WithdrawalService {
             throw new InsufficientFundsException();
         }
         user.withdraw(amount);
-        return withdrawalRepository.save(new Withdrawal(user, amount, DepositService.mask(cardNumber)));
+        Withdrawal withdrawal = withdrawalRepository.save(
+                new Withdrawal(user, amount, DepositService.mask(cardNumber)));
+        operationService.record(user, OperationType.WITHDRAWAL, amount.negate(),
+                "Вывод на карту " + withdrawal.getCardMask());
+        return withdrawal;
     }
 
     @Transactional(readOnly = true)

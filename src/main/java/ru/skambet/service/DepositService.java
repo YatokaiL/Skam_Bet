@@ -3,6 +3,7 @@ package ru.skambet.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skambet.domain.Deposit;
+import ru.skambet.domain.OperationType;
 import ru.skambet.domain.User;
 import ru.skambet.repository.DepositRepository;
 import ru.skambet.repository.UserRepository;
@@ -18,10 +19,13 @@ public class DepositService {
 
     private final UserRepository userRepository;
     private final DepositRepository depositRepository;
+    private final OperationService operationService;
 
-    public DepositService(UserRepository userRepository, DepositRepository depositRepository) {
+    public DepositService(UserRepository userRepository, DepositRepository depositRepository,
+                          OperationService operationService) {
         this.userRepository = userRepository;
         this.depositRepository = depositRepository;
+        this.operationService = operationService;
     }
 
     /**
@@ -33,7 +37,9 @@ public class DepositService {
         User user = userRepository.findForUpdate(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
         user.deposit(amount);
-        return depositRepository.save(new Deposit(user, amount, mask(cardNumber)));
+        Deposit deposit = depositRepository.save(new Deposit(user, amount, mask(cardNumber)));
+        operationService.record(user, OperationType.DEPOSIT, amount, "Пополнение с карты " + deposit.getCardMask());
+        return deposit;
     }
 
     @Transactional(readOnly = true)

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skambet.domain.Event;
 import ru.skambet.domain.ExpressBet;
+import ru.skambet.domain.OperationType;
 import ru.skambet.domain.Outcome;
 import ru.skambet.domain.User;
 import ru.skambet.repository.EventRepository;
@@ -27,12 +28,14 @@ public class ExpressService {
     private final ExpressBetRepository expressBetRepository;
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final OperationService operationService;
 
     public ExpressService(ExpressBetRepository expressBetRepository, EventRepository eventRepository,
-                          UserRepository userRepository) {
+                          UserRepository userRepository, OperationService operationService) {
         this.expressBetRepository = expressBetRepository;
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
+        this.operationService = operationService;
     }
 
     public record Selection(Long eventId, Outcome outcome) {
@@ -71,7 +74,9 @@ public class ExpressService {
             throw new InsufficientFundsException();
         }
         user.withdraw(amount);
-        return expressBetRepository.save(express);
+        ExpressBet saved = expressBetRepository.save(express);
+        operationService.record(user, OperationType.EXPRESS, amount.negate(), describe(saved));
+        return saved;
     }
 
     @Transactional(readOnly = true)
@@ -85,5 +90,14 @@ public class ExpressService {
         // legs are lazy, the view needs them after the transaction (open-in-view is off)
         list.forEach(x -> x.getLegs().forEach(l -> l.getEvent().getTitle()));
         return list;
+    }
+
+    /**
+     * "Экспресс из 2 событий" - for the history of operations.
+     */
+    public static String describe(ExpressBet express) {
+        int n = express.getLegs().size();
+        String events = n % 10 == 1 && n % 100 != 11 ? "события" : "событий";
+        return "Экспресс из " + n + " " + events;
     }
 }
