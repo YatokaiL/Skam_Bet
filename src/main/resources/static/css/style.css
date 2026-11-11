@@ -625,3 +625,22 @@ button.odd {
 .bets-summary__sep {
     margin: 0 8px;
 }
+
+/* feature 15: history of operations */
+
+.operation-amount {
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.operation-amount--plus {
+    color: var(--green);
+}
+
+.operation-amount--minus {
+    color: var(--text);
+}
+
+.operation-description {
+    color: var(--text-muted);
+}

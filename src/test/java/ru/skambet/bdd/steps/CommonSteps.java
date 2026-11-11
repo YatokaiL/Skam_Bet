@@ -24,7 +24,8 @@ public class CommonSteps {
             Map.entry("Вывод средств", "/withdraw"),
             Map.entry("Личный кабинет", "/profile"),
             Map.entry("Расчёт событий", "/admin/events"),
-            Map.entry("Результаты", "/results"));
+            Map.entry("Результаты", "/results"),
+            Map.entry("История операций", "/operations"));
 
     private final Browser browser;
 

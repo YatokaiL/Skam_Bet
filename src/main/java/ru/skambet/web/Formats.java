@@ -18,6 +18,16 @@ public class Formats {
         return value.setScale(2, RoundingMode.HALF_UP).toPlainString() + " ₽";
     }
 
+    /**
+     * Feature 15: "+500.00 ₽" for money to the balance, "-200.00 ₽" for money from it.
+     */
+    public String signedMoney(BigDecimal value) {
+        if (value == null) {
+            return "";
+        }
+        return (value.signum() > 0 ? "+" : "") + money(value);
+    }
+
     public String odds(BigDecimal value) {
         if (value == null) {
             return "—";

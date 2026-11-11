@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('История операций')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container page">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <h1>История операций</h1>
+
+    <div class="sport-tabs" id="type-tabs">
+        <a th:href="@{/operations}" id="type-ALL" class="tab"
+           th:classappend="${selectedType == null} ? 'active'">Все</a>
+        <a th:each="t : ${types}" th:href="@{/operations(type=${t})}" th:id="'type-' + ${t}" class="tab"
+           th:classappend="${selectedType == t} ? 'active'" th:text="${t.title}">Пополнение</a>
+    </div>
+
+    <div class="empty-state" id="no-operations" th:if="${#lists.isEmpty(operations)}"
+         th:text="${selectedType == null} ? 'Операций пока нет' : 'Нет операций выбранного типа'">
+        Операций пока нет
+    </div>
+
+    <table class="table" id="operations-table" th:unless="${#lists.isEmpty(operations)}">
+        <thead>
+        <tr>
+            <th>Дата</th>
+            <th>Операция</th>
+            <th>Описание</th>
+            <th>Сумма</th>
+            <th>Баланс после</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="o : ${operations}" class="operation-row">
+            <td class="operation-date" th:text="${#temporals.format(o.createdAt, 'dd.MM.yyyy HH:mm')}"></td>
+            <td class="operation-type" th:text="${o.type.title}">Пополнение</td>
+            <td class="operation-description" th:text="${o.description}">Пополнение с карты **** 1111</td>
+            <td class="operation-amount"
+                th:classappend="${o.amount.signum() > 0} ? 'operation-amount--plus' : 'operation-amount--minus'"
+                th:text="${@fmt.signedMoney(o.amount)}">+500.00 ₽</td>
+            <td class="operation-balance" th:text="${@fmt.money(o.balanceAfter)}">1500.00 ₽</td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
