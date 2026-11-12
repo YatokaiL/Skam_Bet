@@ -109,6 +109,15 @@ public class Event {
         };
     }
 
+    /**
+     * Feature 16: new odds from the administrator. Bets keep the odds they were placed with.
+     */
+    public void changeOdds(BigDecimal oddsHome, BigDecimal oddsDraw, BigDecimal oddsAway) {
+        this.oddsHome = oddsHome;
+        this.oddsDraw = oddsDraw;
+        this.oddsAway = oddsAway;
+    }
+
     public void settle(Outcome result) {
         this.result = result;
         this.settledAt = LocalDateTime.now();

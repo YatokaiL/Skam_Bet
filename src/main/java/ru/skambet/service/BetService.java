@@ -36,6 +36,15 @@ public class BetService {
 
     @Transactional
     public Bet placeBet(String username, Long eventId, Outcome outcome, BigDecimal amount) {
+        return placeBet(username, eventId, outcome, amount, null);
+    }
+
+    /**
+     * @param expectedOdds odds shown to the user in the coupon (feature 16), null - not checked
+     */
+    @Transactional
+    public Bet placeBet(String username, Long eventId, Outcome outcome, BigDecimal amount,
+                        BigDecimal expectedOdds) {
         User user = userRepository.findForUpdate(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
         Event event = eventRepository.findById(eventId)
@@ -47,6 +56,9 @@ public class BetService {
         BigDecimal odds = event.getOdds(outcome);
         if (odds == null) {
             throw new BetRejectedException("Ставка на этот исход недоступна");
+        }
+        if (expectedOdds != null && odds.compareTo(expectedOdds) != 0) {
+            throw new OddsChangedException(expectedOdds, odds);
         }
         if (user.getBalance().compareTo(amount) < 0) {
             throw new InsufficientFundsException();

@@ -70,6 +70,7 @@
 
             <form th:unless="${#lists.isEmpty(items)}" th:action="@{/express}" th:object="${expressForm}"
                   method="post" class="form" id="express-form" novalidate>
+                <input type="hidden" name="expectedOdds" th:value="${totalOdds}">
                 <div class="coupon__row">
                     <span>Событий</span>
                     <b id="express-count" th:text="${#lists.size(items)}">2</b>

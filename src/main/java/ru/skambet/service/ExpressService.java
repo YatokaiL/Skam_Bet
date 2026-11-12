@@ -43,6 +43,15 @@ public class ExpressService {
 
     @Transactional
     public ExpressBet placeExpress(String username, List<Selection> selections, BigDecimal amount) {
+        return placeExpress(username, selections, amount, null);
+    }
+
+    /**
+     * @param expectedOdds total odds shown to the user in the coupon (feature 16), null - not checked
+     */
+    @Transactional
+    public ExpressBet placeExpress(String username, List<Selection> selections, BigDecimal amount,
+                                   BigDecimal expectedOdds) {
         if (selections.size() < MIN_EVENTS) {
             throw new BetRejectedException("Экспресс должен содержать не менее " + MIN_EVENTS + " событий");
         }
@@ -70,6 +79,9 @@ public class ExpressService {
             express.addLeg(event, selection.outcome(), odds);
         }
 
+        if (expectedOdds != null && express.getOdds().compareTo(expectedOdds) != 0) {
+            throw new OddsChangedException(expectedOdds, express.getOdds());
+        }
         if (user.getBalance().compareTo(amount) < 0) {
             throw new InsufficientFundsException();
         }

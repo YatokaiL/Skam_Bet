@@ -644,3 +644,98 @@ button.odd {
 .operation-description {
     color: var(--text-muted);
 }
+
+/* feature 16: admin panel and line management */
+
+.admin-bar {
+    background: #131d27;
+    border-top: 1px solid var(--border);
+}
+
+.admin-bar__inner {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    height: 40px;
+    font-size: 14px;
+}
+
+.admin-bar__title {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.admin-nav {
+    display: flex;
+    gap: 18px;
+}
+
+.admin-nav a {
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.admin-nav a:hover {
+    color: var(--text);
+    text-decoration: none;
+}
+
+.event-form {
+    margin-bottom: 8px;
+}
+
+.event-form__grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1.4fr 1.4fr 1.4fr 0.8fr 0.8fr 0.8fr;
+    gap: 12px;
+    align-items: start;
+}
+
+.form .select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-input);
+    color: var(--text);
+    font-size: 15px;
+    font-family: inherit;
+}
+
+.odds-form {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin: 0;
+}
+
+.odds-input {
+    width: 64px;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-input);
+    color: var(--text);
+    font-family: inherit;
+    text-align: center;
+}
+
+.odds-input--none {
+    border-color: transparent;
+    background: transparent;
+    color: var(--text-muted);
+}
+
+.alert-warning {
+    background: rgba(245, 197, 24, 0.12);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+@media (max-width: 1000px) {
+    .event-form__grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}

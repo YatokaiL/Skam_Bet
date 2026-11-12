@@ -19,6 +19,7 @@ import ru.skambet.service.BetService;
 import ru.skambet.service.EventService;
 import ru.skambet.service.ExpressService;
 import ru.skambet.service.InsufficientFundsException;
+import ru.skambet.service.OddsChangedException;
 import ru.skambet.web.form.Amounts;
 import ru.skambet.web.form.BetForm;
 import ru.skambet.web.form.BetFormValidator;
@@ -81,11 +82,14 @@ public class BetController {
         if (!result.hasErrors()) {
             try {
                 betService.placeBet(principal.getName(), form.getEventId(), form.getOutcome(),
-                        Amounts.parse(form.getAmount()));
+                        Amounts.parse(form.getAmount()), form.getExpectedOdds());
                 redirect.addFlashAttribute("success", "Ставка принята");
                 return "redirect:/bets/my";
             } catch (InsufficientFundsException e) {
                 result.rejectValue("amount", "insufficient", e.getMessage());
+            } catch (OddsChangedException e) {
+                // feature 16: the coupon is shown again with the new odds, the user confirms the bet
+                model.addAttribute("oddsChanged", e.getMessage() + ". Проверьте купон и подтвердите ставку");
             } catch (BetRejectedException e) {
                 redirect.addFlashAttribute("error", e.getMessage());
                 return "redirect:/";

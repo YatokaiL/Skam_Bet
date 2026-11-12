@@ -15,6 +15,7 @@ import ru.skambet.service.BetRejectedException;
 import ru.skambet.service.EventService;
 import ru.skambet.service.ExpressService;
 import ru.skambet.service.InsufficientFundsException;
+import ru.skambet.service.OddsChangedException;
 import ru.skambet.web.form.Amounts;
 import ru.skambet.web.form.ExpressForm;
 import ru.skambet.web.form.ExpressFormValidator;
@@ -117,12 +118,17 @@ public class ExpressController {
         expressValidator.validate(form, result);
         if (!result.hasErrors()) {
             try {
-                expressService.placeExpress(principal.getName(), selections, Amounts.parse(form.getAmount()));
+                expressService.placeExpress(principal.getName(), selections, Amounts.parse(form.getAmount()),
+                        form.getExpectedOdds());
                 coupon.clear();
                 redirect.addFlashAttribute("success", "Экспресс принят");
                 return "redirect:/bets/my";
             } catch (InsufficientFundsException e) {
                 result.rejectValue("amount", "insufficient", e.getMessage());
+            } catch (OddsChangedException e) {
+                // feature 16: the coupon is shown again with the new total odds
+                model.addAttribute("error", "Общий коэффициент изменился: " + e.getOldOdds().toPlainString()
+                        + " → " + e.getNewOdds().toPlainString() + ". Проверьте купон и подтвердите экспресс");
             } catch (BetRejectedException e) {
                 // an event has started meanwhile - remove it, the user decides what to do next
                 removeStartedEvents();

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Управление линией')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container page">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <h1>Управление линией</h1>
+
+    <form th:action="@{/admin/line}" th:object="${eventForm}" method="post" class="card form event-form"
+          id="event-form" novalidate>
+        <h2>Новое событие</h2>
+        <div class="event-form__grid">
+            <div class="form-group">
+                <label for="sport">Вид спорта</label>
+                <select th:field="*{sport}" class="select">
+                    <option th:each="s : ${sports}" th:value="${s}" th:text="${s.title}">Футбол</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="homeTeam">Хозяева</label>
+                <input type="text" th:field="*{homeTeam}" maxlength="100" placeholder="Спартак">
+                <div class="field-error" th:if="${#fields.hasErrors('homeTeam')}" th:errors="*{homeTeam}"></div>
+            </div>
+            <div class="form-group">
+                <label for="awayTeam">Гости</label>
+                <input type="text" th:field="*{awayTeam}" maxlength="100" placeholder="ЦСКА">
+                <div class="field-error" th:if="${#fields.hasErrors('awayTeam')}" th:errors="*{awayTeam}"></div>
+            </div>
+            <div class="form-group">
+                <label for="startTime">Начало</label>
+                <input type="text" th:field="*{startTime}" maxlength="16" placeholder="ДД.ММ.ГГГГ ЧЧ:ММ">
+                <div class="field-error" th:if="${#fields.hasErrors('startTime')}" th:errors="*{startTime}"></div>
+            </div>
+            <div class="form-group">
+                <label for="oddsHome">П1</label>
+                <input type="text" th:field="*{oddsHome}" inputmode="decimal" placeholder="2.10">
+                <div class="field-error" th:if="${#fields.hasErrors('oddsHome')}" th:errors="*{oddsHome}"></div>
+            </div>
+            <div class="form-group">
+                <label for="oddsDraw">X</label>
+                <input type="text" th:field="*{oddsDraw}" inputmode="decimal" placeholder="3.40">
+                <div class="field-error" th:if="${#fields.hasErrors('oddsDraw')}" th:errors="*{oddsDraw}"></div>
+            </div>
+            <div class="form-group">
+                <label for="oddsAway">П2</label>
+                <input type="text" th:field="*{oddsAway}" inputmode="decimal" placeholder="3.20">
+                <div class="field-error" th:if="${#fields.hasErrors('oddsAway')}" th:errors="*{oddsAway}"></div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary" id="add-event-btn">Добавить событие</button>
+        <p class="form-hint">Коэффициент X указывается только для футбола и хоккея.</p>
+    </form>
+
+    <h2 class="section-title">События в линии</h2>
+    <div class="empty-state" id="no-line-events" th:if="${#lists.isEmpty(events)}">В линии пока нет событий</div>
+
+    <table class="table" id="line-table" th:unless="${#lists.isEmpty(events)}">
+        <thead>
+        <tr>
+            <th>Начало</th>
+            <th>Вид спорта</th>
+            <th>Событие</th>
+            <th>Коэффициенты П1 / X / П2</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="e : ${events}" class="line-row" th:attr="data-event-id=${e.id}">
+            <td class="event-time" th:text="${#temporals.format(e.startTime, 'dd.MM HH:mm')}">01.10 19:00</td>
+            <td class="event-sport" th:text="${e.sport.title}">Футбол</td>
+            <td class="event-title" th:text="${e.title}">Спартак — ЦСКА</td>
+            <td>
+                <form th:action="@{/admin/line/{id}/odds(id=${e.id})}" method="post" class="odds-form">
+                    <input type="text" name="oddsHome" class="odds-input" th:value="${@fmt.odds(e.oddsHome)}"
+                           aria-label="П1">
+                    <input th:if="${e.sport.drawPossible}" type="text" name="oddsDraw" class="odds-input"
+                           th:value="${@fmt.odds(e.oddsDraw)}" aria-label="X">
+                    <span th:unless="${e.sport.drawPossible}" class="odds-input odds-input--none">—</span>
+                    <input type="text" name="oddsAway" class="odds-input" th:value="${@fmt.odds(e.oddsAway)}"
+                           aria-label="П2">
+                    <button type="submit" class="btn btn-outline btn-small">Сохранить</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

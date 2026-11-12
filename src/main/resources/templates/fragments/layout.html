@@ -22,8 +22,6 @@
             <a th:if="${currentUser != null}" th:href="@{/deposit}" id="nav-deposit">Пополнить</a>
             <a th:if="${currentUser != null}" th:href="@{/withdraw}" id="nav-withdraw">Вывести</a>
             <a th:if="${currentUser != null}" th:href="@{/operations}" id="nav-operations">История</a>
-            <a th:if="${currentUser != null and currentUser.admin}" th:href="@{/admin/events}"
-               id="nav-settlement">Расчёт</a>
         </nav>
 
         <div class="user-panel" th:if="${currentUser != null}">
@@ -38,6 +36,17 @@
         <div class="user-panel" th:if="${currentUser == null}">
             <a th:href="@{/login}" class="btn btn-outline" id="login-link">Вход</a>
             <a th:href="@{/register}" class="btn btn-primary" id="register-link">Регистрация</a>
+        </div>
+    </div>
+
+    <!-- second row for administrators: sections of the admin panel -->
+    <div class="admin-bar" th:if="${currentUser != null and currentUser.admin}">
+        <div class="container admin-bar__inner">
+            <span class="admin-bar__title">Администратор</span>
+            <nav class="admin-nav">
+                <a th:href="@{/admin/line}" id="nav-admin-line">Управление линией</a>
+                <a th:href="@{/admin/events}" id="nav-settlement">Расчёт</a>
+            </nav>
         </div>
     </div>
 </header>
