@@ -25,7 +25,8 @@ public class CommonSteps {
             Map.entry("Личный кабинет", "/profile"),
             Map.entry("Расчёт событий", "/admin/events"),
             Map.entry("Результаты", "/results"),
-            Map.entry("История операций", "/operations"));
+            Map.entry("История операций", "/operations"),
+            Map.entry("Управление линией", "/admin/line"));
 
     private final Browser browser;
 

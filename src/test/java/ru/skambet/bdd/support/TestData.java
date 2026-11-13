@@ -166,6 +166,18 @@ public class TestData {
         }
     }
 
+    /**
+     * Feature 16: the administrator changed the odds while the user was looking at the coupon.
+     */
+    public void changeOdds(String eventTitle, Outcome outcome, BigDecimal odds) {
+        String column = switch (outcome) {
+            case HOME -> "odds_home";
+            case DRAW -> "odds_draw";
+            case AWAY -> "odds_away";
+        };
+        jdbcTemplate.update("UPDATE events SET " + column + " = ? WHERE id = ?", odds, eventByTitle(eventTitle).getId());
+    }
+
     public void addFavorite(String username, String eventTitle) {
         jdbcTemplate.update("INSERT INTO favorites (user_id, event_id, created_at) "
                         + "SELECT u.id, ?, now() FROM users u WHERE u.username = ?",
