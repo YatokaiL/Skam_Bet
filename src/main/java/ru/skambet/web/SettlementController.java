@@ -18,6 +18,8 @@ import ru.skambet.service.SettlementService;
 @Controller
 public class SettlementController {
 
+    private static final int MAX_REASON_LENGTH = 200;
+
     private final SettlementService settlementService;
 
     public SettlementController(SettlementService settlementService) {
@@ -42,5 +44,31 @@ public class SettlementController {
             redirect.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/admin/events";
+    }
+
+    /**
+     * Feature 17. back = "line" returns to the line management page.
+     */
+    @PostMapping("/admin/events/{id}/annul")
+    public String annul(@PathVariable Long id, @RequestParam(required = false) String reason,
+                        @RequestParam(defaultValue = "events") String back, RedirectAttributes redirect) {
+        String target = "line".equals(back) ? "redirect:/admin/line" : "redirect:/admin/events";
+        String text = reason == null ? "" : reason.trim();
+        if (text.isEmpty()) {
+            redirect.addFlashAttribute("error", "Укажите причину аннулирования");
+            return target;
+        }
+        if (text.length() > MAX_REASON_LENGTH) {
+            redirect.addFlashAttribute("error", "Причина — не длиннее " + MAX_REASON_LENGTH + " символов");
+            return target;
+        }
+        try {
+            SettlementService.AnnulResult annulled = settlementService.annul(id, text);
+            redirect.addFlashAttribute("success", "Событие «" + annulled.event().getTitle()
+                    + "» аннулировано, ставок возвращено: " + annulled.returnedBets());
+        } catch (SettlementRejectedException e) {
+            redirect.addFlashAttribute("error", e.getMessage());
+        }
+        return target;
     }
 }

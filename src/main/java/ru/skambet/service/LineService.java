@@ -32,6 +32,9 @@ public class LineService {
     public Event changeOdds(Long eventId, BigDecimal oddsHome, BigDecimal oddsDraw, BigDecimal oddsAway) {
         Event event = eventRepository.findForUpdate(eventId)
                 .orElseThrow(() -> new LineException("Событие не найдено"));
+        if (event.isAnnulled()) {
+            throw new LineException("Событие аннулировано, коэффициенты изменить нельзя");
+        }
         if (event.isStarted()) {
             throw new LineException("Событие уже началось, коэффициенты изменить нельзя");
         }

@@ -52,7 +52,7 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         // db is persistent, old demo matches are in the past after a few days - add new ones then
-        if (!eventRepository.findByStartTimeAfterOrderByStartTimeAsc(LocalDateTime.now()).isEmpty()) {
+        if (!eventRepository.findByStartTimeAfterAndAnnulledAtIsNullOrderByStartTimeAsc(LocalDateTime.now()).isEmpty()) {
             return;
         }
         LocalDateTime today = LocalDateTime.now().truncatedTo(ChronoUnit.HOURS);

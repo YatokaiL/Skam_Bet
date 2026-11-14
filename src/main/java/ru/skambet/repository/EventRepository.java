@@ -14,17 +14,18 @@ import java.util.Optional;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
 
-    List<Event> findByStartTimeAfterOrderByStartTimeAsc(LocalDateTime time);
+    List<Event> findByStartTimeAfterAndAnnulledAtIsNullOrderByStartTimeAsc(LocalDateTime time);
 
-    List<Event> findBySportAndStartTimeAfterOrderByStartTimeAsc(Sport sport, LocalDateTime time);
+    List<Event> findBySportAndStartTimeAfterAndAnnulledAtIsNullOrderByStartTimeAsc(Sport sport, LocalDateTime time);
 
     // feature 6: started events waiting for the result
-    List<Event> findByStartTimeLessThanEqualAndResultIsNullOrderByStartTimeAsc(LocalDateTime time);
+    List<Event> findByStartTimeLessThanEqualAndResultIsNullAndAnnulledAtIsNullOrderByStartTimeAsc(LocalDateTime time);
 
-    List<Event> findByResultIsNotNullOrderBySettledAtDescIdDesc();
+    // settled or annulled events (feature 17 sets settled_at for annulled ones too)
+    List<Event> findBySettledAtIsNotNullOrderBySettledAtDescIdDesc();
 
     // feature 13: results of one sport
-    List<Event> findBySportAndResultIsNotNullOrderBySettledAtDescIdDesc(Sport sport);
+    List<Event> findBySportAndSettledAtIsNotNullOrderBySettledAtDescIdDesc(Sport sport);
 
     /**
      * select ... for update - two administrators must not settle the same event at once

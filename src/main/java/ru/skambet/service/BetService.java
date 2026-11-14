@@ -50,6 +50,9 @@ public class BetService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new BetRejectedException("Событие не найдено"));
 
+        if (event.isAnnulled()) {
+            throw new BetRejectedException("Событие аннулировано");
+        }
         if (event.isStarted()) {
             throw new BetRejectedException("Приём ставок на это событие закрыт");
         }

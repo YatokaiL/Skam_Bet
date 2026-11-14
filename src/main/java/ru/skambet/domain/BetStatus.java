@@ -4,7 +4,9 @@ public enum BetStatus {
     PENDING("В игре"),
     WON("Выигрыш"),
     LOST("Проигрыш"),
-    CANCELLED("Отменена");
+    CANCELLED("Отменена"),
+    // feature 17: the event was annulled, the money is returned
+    ANNULLED("Аннулирована");
 
     private final String title;
 

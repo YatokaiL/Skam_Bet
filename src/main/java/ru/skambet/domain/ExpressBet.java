@@ -95,6 +95,10 @@ public class ExpressBet {
         }
         boolean allSettled = true;
         for (ExpressLeg leg : legs) {
+            // feature 17: an annulled event counts as guessed with the odds 1.00
+            if (leg.getEvent().isAnnulled()) {
+                continue;
+            }
             Outcome result = leg.getEvent().getResult();
             if (result == null) {
                 allSettled = false;
@@ -108,9 +112,30 @@ public class ExpressBet {
         }
     }
 
+    /**
+     * Feature 17: one of the events was annulled - the express is counted without it.
+     * If all events are annulled, the express itself is annulled and the amount is returned.
+     */
+    public void recalculateAfterAnnulment() {
+        if (status != BetStatus.PENDING) {
+            return;
+        }
+        List<BigDecimal> active = legs.stream()
+                .filter(l -> !l.getEvent().isAnnulled())
+                .map(ExpressLeg::getOdds)
+                .toList();
+        if (active.isEmpty()) {
+            status = BetStatus.ANNULLED;
+            return;
+        }
+        odds = totalOdds(active);
+        potentialWin = amount.multiply(odds).setScale(2, RoundingMode.HALF_UP);
+    }
+
     public String getDescription() {
         return legs.stream()
-                .map(l -> l.getEvent().getTitle() + " (" + l.getOutcome().getLabel() + ")")
+                .map(l -> l.getEvent().getTitle() + " (" + l.getOutcome().getLabel()
+                        + (l.getEvent().isAnnulled() ? ", аннулировано" : "") + ")")
                 .collect(Collectors.joining(", "));
     }
 

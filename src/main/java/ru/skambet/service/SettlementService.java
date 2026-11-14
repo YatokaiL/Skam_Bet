@@ -43,18 +43,21 @@ public class SettlementService {
 
     @Transactional(readOnly = true)
     public List<Event> getEventsToSettle() {
-        return eventRepository.findByStartTimeLessThanEqualAndResultIsNullOrderByStartTimeAsc(LocalDateTime.now());
+        return eventRepository.findByStartTimeLessThanEqualAndResultIsNullAndAnnulledAtIsNullOrderByStartTimeAsc(LocalDateTime.now());
     }
 
     @Transactional(readOnly = true)
     public List<Event> getSettledEvents() {
-        return eventRepository.findByResultIsNotNullOrderBySettledAtDescIdDesc();
+        return eventRepository.findBySettledAtIsNotNullOrderBySettledAtDescIdDesc();
     }
 
     @Transactional
     public Event settle(Long eventId, Outcome result) {
         Event event = eventRepository.findForUpdate(eventId)
                 .orElseThrow(() -> new SettlementRejectedException("Событие не найдено"));
+        if (event.isAnnulled()) {
+            throw new SettlementRejectedException("Событие аннулировано");
+        }
         if (event.isSettled()) {
             throw new SettlementRejectedException("Событие уже рассчитано");
         }
@@ -84,9 +87,61 @@ public class SettlementService {
         return event;
     }
 
+    /**
+     * @param returnedBets single bets and whole expresses whose amount was returned
+     */
+    public record AnnulResult(Event event, int returnedBets) {
+    }
+
+    /**
+     * Feature 17: the match is cancelled or postponed. Single bets are returned, in expresses the event
+     * counts with the odds 1.00 - the express is recalculated, and wins at once if the other events are guessed.
+     */
+    @Transactional
+    public AnnulResult annul(Long eventId, String reason) {
+        Event event = eventRepository.findForUpdate(eventId)
+                .orElseThrow(() -> new SettlementRejectedException("Событие не найдено"));
+        if (event.isAnnulled()) {
+            throw new SettlementRejectedException("Событие уже аннулировано");
+        }
+        if (event.isSettled()) {
+            throw new SettlementRejectedException("Событие уже рассчитано, аннулировать его нельзя");
+        }
+
+        event.annul(reason);
+        int returned = 0;
+
+        for (Bet bet : betRepository.findByEventIdAndStatus(eventId, BetStatus.PENDING)) {
+            bet.annul();
+            refund(bet.getUser(), bet.getAmount(), "Аннулирование: " + BetService.describe(bet));
+            returned++;
+        }
+
+        for (ExpressBet express : expressBetRepository.findByEventAndStatus(eventId, BetStatus.PENDING)) {
+            express.recalculateAfterAnnulment();
+            if (express.getStatus() == BetStatus.ANNULLED) {
+                refund(express.getUser(), express.getAmount(), "Аннулирование: " + ExpressService.describe(express));
+                returned++;
+                continue;
+            }
+            // the annulled event could be the last one the express was waiting for
+            express.settle();
+            if (express.getStatus() == BetStatus.WON) {
+                payOut(express.getUser(), express.getPotentialWin(),
+                        "Выигрыш: " + ExpressService.describe(express));
+            }
+        }
+        return new AnnulResult(event, returned);
+    }
+
     // users were loaded together with the bets, without a lock - so the balance is changed in the db directly
     private void payOut(User owner, BigDecimal amount, String description) {
         userRepository.addToBalance(owner.getId(), amount);
         operationService.recordAfterUpdate(owner, OperationType.WIN, amount, description);
+    }
+
+    private void refund(User owner, BigDecimal amount, String description) {
+        userRepository.addToBalance(owner.getId(), amount);
+        operationService.recordAfterUpdate(owner, OperationType.REFUND, amount, description);
     }
 }

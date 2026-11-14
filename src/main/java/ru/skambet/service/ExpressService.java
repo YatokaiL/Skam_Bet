@@ -69,7 +69,7 @@ public class ExpressService {
             if (!eventIds.add(event.getId())) {
                 throw new BetRejectedException("В экспресс нельзя добавить два исхода одного события");
             }
-            if (event.isStarted()) {
+            if (!event.isOpenForBets()) {
                 throw new BetRejectedException("Приём ставок на событие «" + event.getTitle() + "» закрыт");
             }
             BigDecimal odds = event.getOdds(selection.outcome());

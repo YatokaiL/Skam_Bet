@@ -37,9 +37,12 @@
             <td class="event-sport" th:text="${e.sport.title}">Футбол</td>
             <td class="event-title" th:text="${e.title}">Спартак — ЦСКА</td>
             <td class="result-outcome">
-                <span class="badge badge--won" th:text="|${e.result.label} · ${e.resultTitle}|">П1 · Спартак</span>
+                <span th:if="${e.annulled}" class="badge badge--cancelled"
+                      th:text="|Аннулировано · ${e.annulReason}|">Аннулировано · Матч перенесён</span>
+                <span th:unless="${e.annulled}" class="badge badge--won"
+                      th:text="|${e.result.label} · ${e.resultTitle}|">П1 · Спартак</span>
             </td>
-            <td class="result-odds" th:text="${@fmt.odds(e.getOdds(e.result))}">2.10</td>
+            <td class="result-odds" th:text="${e.annulled} ? '—' : ${@fmt.odds(e.getOdds(e.result))}">2.10</td>
         </tr>
         </tbody>
     </table>

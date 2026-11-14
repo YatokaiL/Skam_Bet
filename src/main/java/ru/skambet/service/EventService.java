@@ -30,9 +30,9 @@ public class EventService {
     public List<Event> getLine(Sport sport) {
         LocalDateTime now = LocalDateTime.now();
         if (sport == null) {
-            return eventRepository.findByStartTimeAfterOrderByStartTimeAsc(now);
+            return eventRepository.findByStartTimeAfterAndAnnulledAtIsNullOrderByStartTimeAsc(now);
         }
-        return eventRepository.findBySportAndStartTimeAfterOrderByStartTimeAsc(sport, now);
+        return eventRepository.findBySportAndStartTimeAfterAndAnnulledAtIsNullOrderByStartTimeAsc(sport, now);
     }
 
     /**
@@ -57,9 +57,9 @@ public class EventService {
     @Transactional(readOnly = true)
     public List<Event> getResults(Sport sport) {
         if (sport == null) {
-            return eventRepository.findByResultIsNotNullOrderBySettledAtDescIdDesc();
+            return eventRepository.findBySettledAtIsNotNullOrderBySettledAtDescIdDesc();
         }
-        return eventRepository.findBySportAndResultIsNotNullOrderBySettledAtDescIdDesc(sport);
+        return eventRepository.findBySportAndSettledAtIsNotNullOrderBySettledAtDescIdDesc(sport);
     }
 
     @Transactional(readOnly = true)

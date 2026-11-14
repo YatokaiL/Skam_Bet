@@ -20,6 +20,7 @@
             <th>Вид спорта</th>
             <th>Событие</th>
             <th>Результат</th>
+            <th>Аннулирование</th>
         </tr>
         </thead>
         <tbody>
@@ -34,6 +35,9 @@
                     </select>
                     <button type="submit" class="btn btn-primary btn-small">Рассчитать</button>
                 </form>
+            </td>
+            <td>
+                <form th:replace="~{fragments/annul :: form(${e}, 'events')}"></form>
             </td>
         </tr>
         </tbody>
@@ -56,7 +60,7 @@
         <tr th:each="e : ${settled}" class="settled-row">
             <td class="event-time" th:text="${#temporals.format(e.startTime, 'dd.MM HH:mm')}"></td>
             <td class="event-title" th:text="${e.title}"></td>
-            <td class="event-result" th:text="${e.result.label}"></td>
+            <td class="event-result" th:text="${e.annulled} ? 'Аннулировано' : ${e.result.label}"></td>
             <td class="event-settled-at" th:text="${#temporals.format(e.settledAt, 'dd.MM.yyyy HH:mm')}"></td>
         </tr>
         </tbody>

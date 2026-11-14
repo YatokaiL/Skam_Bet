@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- feature 17: annulment of an event, used on the settlement and line management pages -->
+<form th:fragment="form(event, back)" th:action="@{/admin/events/{id}/annul(id=${event.id})}" method="post"
+      class="annul-form">
+    <input type="hidden" name="back" th:value="${back}">
+    <input type="text" name="reason" class="annul-reason" maxlength="200" placeholder="Причина"
+           aria-label="Причина аннулирования">
+    <button type="submit" class="btn btn-outline btn-small btn-danger">Аннулировать</button>
+</form>
+
+</body>
+</html>

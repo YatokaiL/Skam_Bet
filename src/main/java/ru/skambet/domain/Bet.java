@@ -80,6 +80,13 @@ public class Bet {
     }
 
     /**
+     * Feature 17: the event was annulled, the amount goes back to the balance.
+     */
+    public void annul() {
+        status = BetStatus.ANNULLED;
+    }
+
+    /**
      * Feature 6: WON or LOST by the result of the event.
      */
     public void settle(Outcome result) {

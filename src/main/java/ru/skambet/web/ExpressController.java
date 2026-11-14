@@ -83,7 +83,7 @@ public class ExpressController {
     @PostMapping("/express/add")
     public String add(@RequestParam Long eventId, @RequestParam Outcome outcome, RedirectAttributes redirect) {
         Optional<Event> event = eventService.findById(eventId);
-        if (event.isEmpty() || event.get().isStarted() || event.get().getOdds(outcome) == null) {
+        if (event.isEmpty() || !event.get().isOpenForBets() || event.get().getOdds(outcome) == null) {
             redirect.addFlashAttribute("error", "Приём ставок на это событие закрыт");
         } else if (!coupon.add(eventId, outcome)) {
             redirect.addFlashAttribute("error",
@@ -142,7 +142,7 @@ public class ExpressController {
     private void removeStartedEvents() {
         for (ExpressService.Selection s : coupon.getSelections()) {
             Optional<Event> event = eventService.findById(s.eventId());
-            if (event.isEmpty() || event.get().isStarted()) {
+            if (event.isEmpty() || !event.get().isOpenForBets()) {
                 coupon.remove(s.eventId());
             }
         }

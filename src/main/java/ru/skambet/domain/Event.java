@@ -52,6 +52,11 @@ public class Event {
 
     private LocalDateTime settledAt;
 
+    // feature 17: match cancelled or postponed
+    private LocalDateTime annulledAt;
+
+    private String annulReason;
+
     protected Event() {
     }
 
@@ -68,6 +73,27 @@ public class Event {
 
     public String getTitle() {
         return homeTeam + " — " + awayTeam;
+    }
+
+    /**
+     * Bets are accepted only before the start and if the event is not annulled.
+     */
+    public boolean isOpenForBets() {
+        return !isStarted() && !isAnnulled();
+    }
+
+    public boolean isAnnulled() {
+        return annulledAt != null;
+    }
+
+    /**
+     * Feature 17. settledAt is set too, so the event goes to the results.
+     */
+    public void annul(String reason) {
+        LocalDateTime now = LocalDateTime.now();
+        this.annulledAt = now;
+        this.settledAt = now;
+        this.annulReason = reason;
     }
 
     public boolean isStarted() {
@@ -161,5 +187,13 @@ public class Event {
 
     public LocalDateTime getSettledAt() {
         return settledAt;
+    }
+
+    public LocalDateTime getAnnulledAt() {
+        return annulledAt;
+    }
+
+    public String getAnnulReason() {
+        return annulReason;
     }
 }

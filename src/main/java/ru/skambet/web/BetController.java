@@ -114,15 +114,15 @@ public class BetController {
         List<ExpressBet> shownExpresses = expresses.stream()
                 .filter(x -> status == null || x.getStatus() == status).toList();
 
-        // cancelled bets were returned to the balance, so they are not counted as placed
+        // cancelled and annulled bets were returned to the balance, so they are not counted as placed
         BigDecimal placed = BigDecimal.ZERO;
         BigDecimal won = BigDecimal.ZERO;
         for (Bet b : shownBets) {
-            placed = b.getStatus() == BetStatus.CANCELLED ? placed : placed.add(b.getAmount());
+            placed = isReturned(b.getStatus()) ? placed : placed.add(b.getAmount());
             won = b.getStatus() == BetStatus.WON ? won.add(b.getPotentialWin()) : won;
         }
         for (ExpressBet x : shownExpresses) {
-            placed = x.getStatus() == BetStatus.CANCELLED ? placed : placed.add(x.getAmount());
+            placed = isReturned(x.getStatus()) ? placed : placed.add(x.getAmount());
             won = x.getStatus() == BetStatus.WON ? won.add(x.getPotentialWin()) : won;
         }
 
@@ -155,8 +155,12 @@ public class BetController {
         return "redirect:/bets/my";
     }
 
+    private static boolean isReturned(BetStatus status) {
+        return status == BetStatus.CANCELLED || status == BetStatus.ANNULLED;
+    }
+
     private static boolean isBettable(Event event, Outcome outcome) {
-        return !event.isStarted() && event.getOdds(outcome) != null;
+        return event.isOpenForBets() && event.getOdds(outcome) != null;
     }
 
     private static void fillSlip(Model model, Event event, Outcome outcome) {

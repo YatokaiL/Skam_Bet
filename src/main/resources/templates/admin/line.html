@@ -64,6 +64,7 @@
             <th>Вид спорта</th>
             <th>Событие</th>
             <th>Коэффициенты П1 / X / П2</th>
+            <th>Аннулирование</th>
         </tr>
         </thead>
         <tbody>
@@ -82,6 +83,9 @@
                            aria-label="П2">
                     <button type="submit" class="btn btn-outline btn-small">Сохранить</button>
                 </form>
+            </td>
+            <td>
+                <form th:replace="~{fragments/annul :: form(${e}, 'line')}"></form>
             </td>
         </tr>
         </tbody>
