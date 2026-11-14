@@ -33,6 +33,7 @@
 | 14 | Фильтр ставок | вкладки статусов в «Моих ставках» с количеством и итогом: поставлено / выиграно |
 | 15 | История операций | журнал всех изменений баланса: сумма со знаком, баланс после операции, фильтр по типу |
 | 16 | Управление линией | админ добавляет события и меняет коэффициенты, игрок подтверждает ставку, если коэффициент изменился |
+| 17 | Аннулирование события | возврат одиночных ставок, пересчёт экспрессов с коэффициентом 1.00 для отменённого матча |
 
 Документация:
 
@@ -95,7 +96,7 @@ Feature-файлы лежат в `src/test/resources/features`, шаги и page
 | `-Dheadless=true` | без окна браузера |
 | `-Dbrowser=edge` | Edge вместо Chrome |
 | `-Dstep.delay=1500` | пауза после каждого шага в мс, чтобы было видно, что делает тест |
-| `-Dcucumber.filter.tags=@bet` | одна фича: `@registration`, `@login`, `@events`, `@deposit`, `@bet`, `@settlement`, `@withdrawal`, `@express`, `@profile`, `@cancel`, `@search`, `@favorites`, `@results`, `@mybets`, `@operations`, `@line` |
+| `-Dcucumber.filter.tags=@bet` | одна фича: `@registration`, `@login`, `@events`, `@deposit`, `@bet`, `@settlement`, `@withdrawal`, `@express`, `@profile`, `@cancel`, `@search`, `@favorites`, `@results`, `@mybets`, `@operations`, `@line`, `@annul` |
 
 Например, посмотреть оформление ставки в замедленном режиме:
 

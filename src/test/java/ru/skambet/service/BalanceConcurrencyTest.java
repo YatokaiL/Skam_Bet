@@ -101,6 +101,38 @@ class BalanceConcurrencyTest {
         }
     }
 
+    // feature 17
+
+    @RepeatedTest(10)
+    void annulmentDoesNotLoseConcurrentDeposit() throws Exception {
+        Bet bet = createBet(LocalDateTime.now().minusHours(2));
+
+        parallel(() -> settlementService.annul(bet.getEvent().getId(), "Матч отменён"),
+                () -> depositService.deposit("ivan", new BigDecimal("500"), CARD));
+
+        // 1000 + 200 returned + 500 deposit
+        assertThat(data.balanceInDb("ivan")).isEqualByComparingTo("1700");
+    }
+
+    @RepeatedTest(10)
+    void eventIsEitherAnnulledOrSettledNotBoth() throws Exception {
+        Bet bet = createBet(LocalDateTime.now().minusHours(2));
+        Long eventId = bet.getEvent().getId();
+
+        parallel(() -> settlementService.annul(eventId, "Матч отменён"),
+                () -> settlementService.settle(eventId, Outcome.HOME));
+
+        String status = jdbcTemplate.queryForObject("SELECT status FROM bets", String.class);
+        Boolean annulled = jdbcTemplate.queryForObject("SELECT annulled_at IS NOT NULL FROM events", Boolean.class);
+        if (Boolean.TRUE.equals(annulled)) {
+            assertThat(status).isEqualTo("ANNULLED");
+            assertThat(data.balanceInDb("ivan")).isEqualByComparingTo("1200");
+        } else {
+            assertThat(status).isEqualTo("WON");
+            assertThat(data.balanceInDb("ivan")).isEqualByComparingTo("1420");
+        }
+    }
+
     // bet on П1 2.10 for 200, the balance is not changed by TestData
     private Bet createBet(LocalDateTime eventStart) {
         Event event = data.createEvent(Sport.FOOTBALL, "Спартак", "ЦСКА", eventStart,
