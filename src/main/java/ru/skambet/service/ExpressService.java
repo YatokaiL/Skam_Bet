@@ -58,6 +58,10 @@ public class ExpressService {
         if (selections.size() > MAX_EVENTS) {
             throw new BetRejectedException("В экспресс можно добавить не более " + MAX_EVENTS + " событий");
         }
+        // events first (in the order of id, so two expresses can't lock each other), then the user -
+        // the same order as settlement and annulment use
+        selections.stream().map(Selection::eventId).distinct().sorted()
+                .forEach(eventRepository::findForUpdate);
         User user = userRepository.findForUpdate(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
 

@@ -9,7 +9,8 @@ public enum OperationType {
     BET("Ставка"),
     EXPRESS("Экспресс"),
     WIN("Выигрыш"),
-    REFUND("Возврат ставки");
+    REFUND("Возврат ставки"),
+    CASHOUT("Выкуп ставки");
 
     private final String title;
 

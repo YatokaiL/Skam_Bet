@@ -6,7 +6,9 @@ public enum BetStatus {
     LOST("Проигрыш"),
     CANCELLED("Отменена"),
     // feature 17: the event was annulled, the money is returned
-    ANNULLED("Аннулирована");
+    ANNULLED("Аннулирована"),
+    // feature 18: bought back by the bookmaker before the start
+    CASHED_OUT("Выкуплена");
 
     private final String title;
 

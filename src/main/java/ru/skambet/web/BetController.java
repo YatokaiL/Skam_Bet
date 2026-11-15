@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.skambet.domain.Bet;
 import ru.skambet.domain.BetStatus;
@@ -16,6 +17,7 @@ import ru.skambet.domain.ExpressBet;
 import ru.skambet.domain.Outcome;
 import ru.skambet.service.BetRejectedException;
 import ru.skambet.service.BetService;
+import ru.skambet.service.CashoutChangedException;
 import ru.skambet.service.EventService;
 import ru.skambet.service.ExpressService;
 import ru.skambet.service.InsufficientFundsException;
@@ -27,6 +29,7 @@ import ru.skambet.web.form.BetFormValidator;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.EnumMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -134,6 +137,8 @@ public class BetController {
         model.addAttribute("selectedStatus", status);
         model.addAttribute("placed", placed);
         model.addAttribute("won", won);
+        // feature 18
+        model.addAttribute("cashoutOffers", betService.getCashoutOffers(principal.getName()));
         return "bets/my";
     }
 
@@ -149,6 +154,37 @@ public class BetController {
             redirect.addFlashAttribute("error", e.getMessage());
         }
         // stay on the same status tab
+        if (status != null) {
+            redirect.addAttribute("status", status);
+        }
+        return "redirect:/bets/my";
+    }
+
+    /**
+     * Feature 18: current cashout amounts, the page asks for them every few seconds (cashout.js).
+     */
+    @GetMapping("/bets/cashout-offers")
+    @ResponseBody
+    public Map<Long, String> cashoutOffers(Principal principal) {
+        Map<Long, String> offers = new LinkedHashMap<>();
+        betService.getCashoutOffers(principal.getName())
+                .forEach((id, amount) -> offers.put(id, amount.toPlainString()));
+        return offers;
+    }
+
+    @PostMapping("/bets/{id}/cashout")
+    public String cashOut(@PathVariable Long id, @RequestParam(required = false) BigDecimal expectedAmount,
+                          @RequestParam(required = false) BetStatus status, Principal principal,
+                          RedirectAttributes redirect) {
+        try {
+            Bet bet = betService.cashOut(principal.getName(), id, expectedAmount);
+            redirect.addFlashAttribute("success", "Ставка выкуплена за " + formats.money(bet.getCashoutAmount()));
+        } catch (CashoutChangedException e) {
+            redirect.addFlashAttribute("error", "Сумма выкупа изменилась: " + formats.money(e.getOldAmount())
+                    + " → " + formats.money(e.getNewAmount()) + ". Проверьте и подтвердите выкуп");
+        } catch (BetRejectedException e) {
+            redirect.addFlashAttribute("error", e.getMessage());
+        }
         if (status != null) {
             redirect.addAttribute("status", status);
         }

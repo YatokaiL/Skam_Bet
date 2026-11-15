@@ -42,6 +42,7 @@
             <th>Сумма</th>
             <th>Возможный выигрыш</th>
             <th>Статус</th>
+            <th>Выкуп</th>
             <th></th>
         </tr>
         </thead>
@@ -56,6 +57,19 @@
             <td class="bet-status">
                 <span class="badge" th:classappend="'badge--' + ${#strings.toLowerCase(b.status)}"
                       th:text="${b.status.title}">В игре</span>
+            </td>
+            <td class="bet-cashout">
+                <form th:if="${cashoutOffers.containsKey(b.id)}" th:action="@{/bets/{id}/cashout(id=${b.id})}"
+                      method="post" class="cashout-form" th:attr="data-bet-id=${b.id}">
+                    <input type="hidden" name="expectedAmount" th:value="${cashoutOffers.get(b.id)}">
+                    <input type="hidden" name="status" th:if="${selectedStatus != null}" th:value="${selectedStatus}">
+                    <span class="cashout-amount" th:text="${@fmt.money(cashoutOffers.get(b.id))}">180.00 ₽</span>
+                    <button type="submit" class="btn btn-primary btn-small">Выкупить</button>
+                </form>
+                <span th:if="${b.cashoutAmount != null}" class="cashout-done"
+                      th:text="|за ${@fmt.money(b.cashoutAmount)}|">за 180.00 ₽</span>
+                <span th:if="${!cashoutOffers.containsKey(b.id) and b.cashoutAmount == null}"
+                      class="cashout-none">—</span>
             </td>
             <td class="bet-actions">
                 <form th:if="${b.cancellable}" th:action="@{/bets/{id}/cancel(id=${b.id})}" method="post"
@@ -97,5 +111,6 @@
 </main>
 
 <footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/cashout.js}" th:attr="data-url=@{/bets/cashout-offers}"></script>
 </body>
 </html>

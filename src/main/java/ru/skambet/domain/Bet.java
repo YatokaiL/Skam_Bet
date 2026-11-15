@@ -51,6 +51,12 @@ public class Bet {
     @Column(nullable = false)
     private LocalDateTime placedAt;
 
+    // feature 18: how much the bookmaker paid for the bet
+    @Column(precision = 12, scale = 2)
+    private BigDecimal cashoutAmount;
+
+    private LocalDateTime cashedOutAt;
+
     protected Bet() {
     }
 
@@ -73,6 +79,19 @@ public class Bet {
      */
     public boolean isCancellable() {
         return isPending() && !event.isStarted();
+    }
+
+    /**
+     * Feature 18: the bet can be bought back while it is in play and bets on the event are accepted.
+     */
+    public boolean isCashable() {
+        return isPending() && event.isOpenForBets() && event.getOdds(outcome) != null;
+    }
+
+    public void cashOut(BigDecimal amount) {
+        status = BetStatus.CASHED_OUT;
+        cashoutAmount = amount;
+        cashedOutAt = LocalDateTime.now();
     }
 
     public void cancel() {
@@ -127,5 +146,13 @@ public class Bet {
 
     public LocalDateTime getPlacedAt() {
         return placedAt;
+    }
+
+    public BigDecimal getCashoutAmount() {
+        return cashoutAmount;
+    }
+
+    public LocalDateTime getCashedOutAt() {
+        return cashedOutAt;
     }
 }
