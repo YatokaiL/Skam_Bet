@@ -55,6 +55,33 @@ public class MyBetsPage extends BasePage {
                 .isEmpty();
     }
 
+    // feature 18: cashout of a single bet
+
+    public void cashOut(String eventTitle) {
+        clickAndWaitForReload(By.xpath(rowXpath(eventTitle) + "//button[normalize-space()='Выкупить']"));
+    }
+
+    /**
+     * Waits until the amount in the row becomes the expected one - it is updated by the page itself.
+     */
+    public void shouldOfferCashout(String eventTitle, String amount) {
+        waitForExactText(By.xpath(rowXpath(eventTitle) + "//span[contains(@class,'cashout-amount')]"), amount,
+                "Cashout amount for " + eventTitle);
+    }
+
+    /**
+     * Waits until the cashout button disappears from the row (also without reloading the page).
+     */
+    public void shouldNotOfferCashout(String eventTitle) {
+        By button = By.xpath(rowXpath(eventTitle) + "//button[normalize-space()='Выкупить']");
+        visible(By.id("bets-table"));
+        try {
+            wait.until(d -> d.findElements(button).isEmpty());
+        } catch (org.openqa.selenium.TimeoutException e) {
+            throw new AssertionError("Cashout is still offered for " + eventTitle);
+        }
+    }
+
     private static String rowXpath(String eventTitle) {
         return "//table[@id='bets-table']//tr[contains(@class,'bet-row')][td[contains(@class,'bet-event')]"
                 + "[normalize-space()='" + eventTitle + "']]";

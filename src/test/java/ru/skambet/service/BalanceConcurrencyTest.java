@@ -2,6 +2,7 @@ package ru.skambet.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -20,6 +21,7 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Two requests that change the same balance at the same moment, on a real PostgreSQL.
@@ -131,6 +133,56 @@ class BalanceConcurrencyTest {
             assertThat(status).isEqualTo("WON");
             assertThat(data.balanceInDb("ivan")).isEqualByComparingTo("1420");
         }
+    }
+
+    @RepeatedTest(10)
+    void cancelAndAnnulmentReturnTheBetOnce() throws Exception {
+        Bet bet = createBet(LocalDateTime.now().plusHours(5));
+
+        parallel(() -> betService.cancelBet("ivan", bet.getId()),
+                () -> settlementService.annul(bet.getEvent().getId(), "Матч отменён"));
+
+        assertThat(data.balanceInDb("ivan")).isEqualByComparingTo("1200");
+        assertThat(jdbcTemplate.queryForObject("SELECT status FROM bets", String.class)).isIn("CANCELLED", "ANNULLED");
+    }
+
+    // feature 18
+
+    @RepeatedTest(10)
+    void doubleClickOnCashoutPaysOnce() throws Exception {
+        Bet bet = createBet(LocalDateTime.now().plusHours(5));
+
+        parallel(() -> betService.cashOut("ivan", bet.getId(), null),
+                () -> betService.cashOut("ivan", bet.getId(), null));
+
+        // 200 * 2.10 / 2.10 * 0.90
+        assertThat(data.balanceInDb("ivan")).isEqualByComparingTo("1180");
+    }
+
+    @RepeatedTest(10)
+    void cashoutAndAnnulmentPayOnce() throws Exception {
+        Bet bet = createBet(LocalDateTime.now().plusHours(5));
+
+        parallel(() -> betService.cashOut("ivan", bet.getId(), null),
+                () -> settlementService.annul(bet.getEvent().getId(), "Матч отменён"));
+
+        String status = jdbcTemplate.queryForObject("SELECT status FROM bets", String.class);
+        if ("CASHED_OUT".equals(status)) {
+            assertThat(data.balanceInDb("ivan")).isEqualByComparingTo("1180");
+        } else {
+            assertThat(status).isEqualTo("ANNULLED");
+            assertThat(data.balanceInDb("ivan")).isEqualByComparingTo("1200");
+        }
+    }
+
+    @Test
+    void cashoutWithAnOutdatedAmountIsRejected() {
+        Bet bet = createBet(LocalDateTime.now().plusHours(5));
+
+        assertThatThrownBy(() -> betService.cashOut("ivan", bet.getId(), new BigDecimal("150.00")))
+                .isInstanceOf(CashoutChangedException.class);
+        assertThat(data.balanceInDb("ivan")).isEqualByComparingTo("1000");
+        assertThat(jdbcTemplate.queryForObject("SELECT status FROM bets", String.class)).isEqualTo("PENDING");
     }
 
     // bet on П1 2.10 for 200, the balance is not changed by TestData
