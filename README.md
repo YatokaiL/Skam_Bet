@@ -35,6 +35,7 @@
 | 16 | Управление линией | админ добавляет события и меняет коэффициенты, игрок подтверждает ставку, если коэффициент изменился |
 | 17 | Аннулирование события | возврат одиночных ставок, пересчёт экспрессов с коэффициентом 1.00 для отменённого матча |
 | 18 | Выкуп ставки | кэшаут до начала матча, сумма обновляется на странице вслед за коэффициентом |
+| 19 | Верификация | загрузка документа, проверка администратором, вывод средств только после подтверждения личности |
 
 Документация:
 
@@ -97,7 +98,7 @@ Feature-файлы лежат в `src/test/resources/features`, шаги и page
 | `-Dheadless=true` | без окна браузера |
 | `-Dbrowser=edge` | Edge вместо Chrome |
 | `-Dstep.delay=1500` | пауза после каждого шага в мс, чтобы было видно, что делает тест |
-| `-Dcucumber.filter.tags=@bet` | одна фича: `@registration`, `@login`, `@events`, `@deposit`, `@bet`, `@settlement`, `@withdrawal`, `@express`, `@profile`, `@cancel`, `@search`, `@favorites`, `@results`, `@mybets`, `@operations`, `@line`, `@annul`, `@cashout` |
+| `-Dcucumber.filter.tags=@bet` | одна фича: `@registration`, `@login`, `@events`, `@deposit`, `@bet`, `@settlement`, `@withdrawal`, `@express`, `@profile`, `@cancel`, `@search`, `@favorites`, `@results`, `@mybets`, `@operations`, `@line`, `@annul`, `@cashout`, `@verification` |
 
 Например, посмотреть оформление ставки в замедленном режиме:
 

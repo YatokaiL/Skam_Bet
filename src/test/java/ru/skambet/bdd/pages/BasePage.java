@@ -116,6 +116,13 @@ public abstract class BasePage {
         click(By.xpath("//button[normalize-space()='" + text + "']"));
     }
 
+    /**
+     * Sends the form with this button and waits for the next page, so the next step works with the new page.
+     */
+    public void submitWith(String buttonText) {
+        clickAndWaitForReload(By.xpath("//button[normalize-space()='" + buttonText + "']"));
+    }
+
     public void clickNavLink(String text) {
         click(By.xpath("//nav//a[normalize-space()='" + text + "']"));
     }

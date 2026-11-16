@@ -46,8 +46,8 @@ public class TestData {
     }
 
     public void clear() {
-        jdbcTemplate.execute("TRUNCATE account_operations, favorites, express_legs, express_bets, withdrawals, bets, "
-                + "deposits, events, users RESTART IDENTITY CASCADE");
+        jdbcTemplate.execute("TRUNCATE verification_documents, verification_requests, account_operations, favorites, "
+                + "express_legs, express_bets, withdrawals, bets, deposits, events, users RESTART IDENTITY CASCADE");
     }
 
     public User createUser(String username, String password, BigDecimal balance) {
@@ -176,6 +176,27 @@ public class TestData {
             case AWAY -> "odds_away";
         };
         jdbcTemplate.update("UPDATE events SET " + column + " = ? WHERE id = ?", odds, eventByTitle(eventTitle).getId());
+    }
+
+    // feature 19
+
+    public void verifyUser(String username) {
+        jdbcTemplate.update("UPDATE users SET verified_at = now() WHERE username = ?", username);
+    }
+
+    /**
+     * A request waiting for review, with the file from src/test/resources/documents.
+     */
+    public void createVerificationRequest(String username, String fileName) {
+        byte[] content = TestFiles.content(fileName);
+        String contentType = fileName.endsWith(".pdf") ? "application/pdf"
+                : fileName.endsWith(".png") ? "image/png" : "image/jpeg";
+        Long requestId = jdbcTemplate.queryForObject(
+                "INSERT INTO verification_requests (user_id, file_name, content_type, file_size, status, created_at) "
+                        + "SELECT id, ?, ?, ?, 'PENDING', now() FROM users WHERE username = ? RETURNING id",
+                Long.class, fileName, contentType, content.length, username);
+        jdbcTemplate.update("INSERT INTO verification_documents (request_id, content) VALUES (?, ?)",
+                requestId, content);
     }
 
     public void addFavorite(String username, String eventTitle) {
