@@ -36,6 +36,10 @@ public class WithdrawalService {
     public Withdrawal withdraw(String username, BigDecimal amount, String cardNumber) {
         User user = userRepository.findForUpdate(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+        // feature 19
+        if (!user.isVerified()) {
+            throw new VerificationRequiredException();
+        }
         if (user.getBalance().compareTo(amount) < 0) {
             throw new InsufficientFundsException();
         }

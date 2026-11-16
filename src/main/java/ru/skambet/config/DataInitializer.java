@@ -41,6 +41,8 @@ public class DataInitializer implements CommandLineRunner {
             User demo = new User("demo", "demo@skambet.ru", passwordEncoder.encode("demo12345"),
                     LocalDate.of(1999, 5, 20));
             demo.setBalance(new BigDecimal("5000.00"));
+            // feature 19: the demo account is already verified, so withdrawals can be shown
+            demo.verify(LocalDateTime.now());
             userRepository.save(demo);
         }
         // feature 6: administrator settles finished events

@@ -43,6 +43,9 @@ public class User {
     @Column(nullable = false, length = 10)
     private Role role = Role.USER;
 
+    // feature 19: identity approved by the administrator, null - not verified
+    private LocalDateTime verifiedAt;
+
     protected User() {
     }
 
@@ -71,6 +74,14 @@ public class User {
 
     public void changePassword(String encodedPassword) {
         this.password = encodedPassword;
+    }
+
+    public boolean isVerified() {
+        return verifiedAt != null;
+    }
+
+    public void verify(LocalDateTime when) {
+        this.verifiedAt = when;
     }
 
     public boolean isAdmin() {
@@ -115,5 +126,9 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public LocalDateTime getVerifiedAt() {
+        return verifiedAt;
     }
 }

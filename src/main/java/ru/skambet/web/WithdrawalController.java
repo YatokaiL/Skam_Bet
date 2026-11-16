@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.skambet.domain.Withdrawal;
 import ru.skambet.service.InsufficientFundsException;
+import ru.skambet.service.VerificationRequiredException;
 import ru.skambet.service.WithdrawalService;
 import ru.skambet.web.form.Amounts;
 import ru.skambet.web.form.WithdrawalForm;
@@ -53,6 +54,8 @@ public class WithdrawalController {
                 return "redirect:/withdraw";
             } catch (InsufficientFundsException e) {
                 result.rejectValue("amount", "insufficient", e.getMessage());
+            } catch (VerificationRequiredException e) {
+                model.addAttribute("error", e.getMessage());
             }
         }
         model.addAttribute("withdrawals", withdrawalService.getHistory(principal.getName()));

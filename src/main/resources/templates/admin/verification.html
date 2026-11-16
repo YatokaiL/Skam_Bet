@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Верификация пользователей')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container page">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <h1>Верификация пользователей</h1>
+
+    <div class="empty-state" id="no-requests" th:if="${#lists.isEmpty(requests)}">Нет заявок на проверку</div>
+
+    <table class="table" id="requests-table" th:unless="${#lists.isEmpty(requests)}">
+        <thead>
+        <tr>
+            <th>Отправлено</th>
+            <th>Пользователь</th>
+            <th>Документ</th>
+            <th>Решение</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="r : ${requests}" class="request-row" th:attr="data-request-id=${r.id}">
+            <td class="request-date" th:text="${#temporals.format(r.createdAt, 'dd.MM.yyyy HH:mm')}"></td>
+            <td class="request-user" th:text="${r.user.username}">ivan_petrov</td>
+            <td class="request-document">
+                <a th:href="@{/admin/verification/{id}/document(id=${r.id})}" target="_blank" class="document-link"
+                   th:text="${r.fileName}">passport.jpg</a>
+            </td>
+            <td>
+                <div class="review-form">
+                    <form th:action="@{/admin/verification/{id}/approve(id=${r.id})}" method="post" class="inline-form">
+                        <button type="submit" class="btn btn-primary btn-small">Подтвердить</button>
+                    </form>
+                    <form th:action="@{/admin/verification/{id}/reject(id=${r.id})}" method="post" class="review-form">
+                        <input type="text" name="reason" class="annul-reason" maxlength="200" placeholder="Причина"
+                               aria-label="Причина отклонения">
+                        <button type="submit" class="btn btn-outline btn-small btn-danger">Отклонить</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

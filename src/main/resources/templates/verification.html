@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Верификация')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container page page--narrow">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <h1>Верификация</h1>
+
+    <div class="card coupon">
+        <div class="coupon__row">
+            <span>Статус</span>
+            <b id="verification-status" class="verification-status"
+               th:classappend="${state.verified} ? 'verification-status--approved'
+                               : (${state.underReview} ? 'verification-status--pending'
+                               : (${state.latestRequest != null} ? 'verification-status--rejected' : ''))"
+               th:text="${state.verified} ? 'Подтверждена'
+                        : (${state.latestRequest == null} ? 'Не пройдена' : ${state.latestRequest.status.title})">
+                Не пройдена
+            </b>
+        </div>
+        <div class="coupon__row" th:if="${state.verified}">
+            <span>Дата подтверждения</span>
+            <b id="verified-at" th:text="${#temporals.format(state.user.verifiedAt, 'dd.MM.yyyy')}">01.11.2026</b>
+        </div>
+        <div class="coupon__row" th:if="${state.latestRequest != null and !state.verified}">
+            <span>Документ</span>
+            <b id="document-name" th:text="${state.latestRequest.fileName}">passport.jpg</b>
+        </div>
+        <div class="coupon__row"
+             th:if="${state.latestRequest != null and state.latestRequest.rejectReason != null and !state.verified}">
+            <span>Причина отклонения</span>
+            <b id="reject-reason" th:text="${state.latestRequest.rejectReason}">Фото нечёткое</b>
+        </div>
+    </div>
+
+    <p class="form-hint" id="under-review-hint" th:if="${state.underReview}">
+        Документ на проверке у администратора. Обычно это занимает до одного рабочего дня.
+    </p>
+
+    <form th:if="${state.canSubmit()}" th:action="@{/verification}" method="post" enctype="multipart/form-data"
+          class="card form" id="verification-form" novalidate>
+        <div class="form-group">
+            <label for="document">Фото или скан паспорта</label>
+            <input type="file" id="document" name="document" accept=".jpg,.jpeg,.png,.pdf">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="send-document-btn">Отправить на проверку</button>
+        <p class="form-hint">Форматы JPG, PNG или PDF, не больше 5 МБ. Вывод средств доступен после проверки.</p>
+    </form>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

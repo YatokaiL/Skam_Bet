@@ -34,6 +34,13 @@
             <span>Сделано ставок</span>
             <b id="profile-bets" th:text="${betsCount}">0</b>
         </div>
+        <div class="coupon__row">
+            <span>Верификация</span>
+            <b id="profile-verification">
+                <span th:text="${user.verified} ? 'пройдена' : 'не пройдена'">не пройдена</span>
+                <a th:unless="${user.verified}" th:href="@{/verification}" id="profile-verification-link">Пройти</a>
+            </b>
+        </div>
     </div>
 
     <div class="two-columns">
