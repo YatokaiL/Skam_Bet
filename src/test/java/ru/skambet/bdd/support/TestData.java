@@ -199,6 +199,37 @@ public class TestData {
                 requestId, content);
     }
 
+    // feature 20
+
+    /**
+     * The block made by another administrator. hours == null - forever.
+     */
+    public void blockUser(String username, Integer hours, String reason) {
+        jdbcTemplate.update("UPDATE users SET blocked_at = now(), blocked_until = now() + make_interval(hours => ?), "
+                + "block_reason = ? WHERE username = ?", hours, reason, username);
+    }
+
+    public void blockExpired(String username, int hoursAgo, String reason) {
+        jdbcTemplate.update("UPDATE users SET blocked_at = now() - interval '7 days', "
+                + "blocked_until = now() - make_interval(hours => ?), block_reason = ? WHERE username = ?",
+                hoursAgo, reason, username);
+    }
+
+    /**
+     * Length of the block in days, null - not blocked, -1 - forever.
+     */
+    public Integer blockDaysInDb(String username) {
+        return jdbcTemplate.queryForObject("SELECT CASE WHEN blocked_at IS NULL THEN NULL "
+                + "WHEN blocked_until IS NULL THEN -1 "
+                + "ELSE CAST(EXTRACT(EPOCH FROM blocked_until - blocked_at) / 86400 AS INTEGER) END "
+                + "FROM users WHERE username = ?", Integer.class, username);
+    }
+
+    public String blockReasonInDb(String username) {
+        return jdbcTemplate.queryForObject("SELECT block_reason FROM users WHERE username = ?",
+                String.class, username);
+    }
+
     public void addFavorite(String username, String eventTitle) {
         jdbcTemplate.update("INSERT INTO favorites (user_id, event_id, created_at) "
                         + "SELECT u.id, ?, now() FROM users u WHERE u.username = ?",

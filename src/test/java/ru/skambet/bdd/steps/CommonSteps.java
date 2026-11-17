@@ -28,7 +28,8 @@ public class CommonSteps {
             Map.entry("История операций", "/operations"),
             Map.entry("Управление линией", "/admin/line"),
             Map.entry("Верификация", "/verification"),
-            Map.entry("Верификация пользователей", "/admin/verification"));
+            Map.entry("Верификация пользователей", "/admin/verification"),
+            Map.entry("Пользователи", "/admin/users"));
 
     private final Browser browser;
 
