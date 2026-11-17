@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Пользователи')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="container page">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <h1>Пользователи</h1>
+
+    <form th:action="@{/admin/users}" method="get" class="search-form" id="user-search-form">
+        <input type="text" name="q" id="user-search" th:value="${query}" maxlength="50" autocomplete="off"
+               placeholder="Логин или email" aria-label="Поиск пользователя">
+        <button type="submit" class="btn btn-primary" id="user-search-btn">Найти</button>
+        <a th:if="${query != null}" class="btn btn-outline" id="user-search-reset" th:href="@{/admin/users}">Сбросить</a>
+    </form>
+
+    <div class="empty-state" id="no-users" th:if="${#lists.isEmpty(users)}">Пользователи не найдены</div>
+
+    <table class="table" id="users-table" th:unless="${#lists.isEmpty(users)}">
+        <thead>
+        <tr>
+            <th>Логин</th>
+            <th>Email</th>
+            <th>Баланс</th>
+            <th>Верификация</th>
+            <th>Статус</th>
+            <th>Действие</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="u : ${users}" class="user-row" th:attr="data-username=${u.username}">
+            <td class="user-name" th:text="${u.username}">ivan_petrov</td>
+            <td class="user-email" th:text="${u.email}">ivan@test.ru</td>
+            <td class="user-balance" th:text="${@fmt.money(u.balance)}">1000.00 ₽</td>
+            <td class="user-verified" th:text="${u.verified} ? 'Пройдена' : '—'">—</td>
+            <td class="user-status">
+                <span th:if="${u.blocked}" class="badge badge--blocked"
+                      th:text="${u.blockedUntil == null} ? 'Заблокирован навсегда'
+                               : |Заблокирован до ${#temporals.format(u.blockedUntil, 'dd.MM.yyyy HH:mm')}|">
+                    Заблокирован навсегда</span>
+                <span th:unless="${u.blocked}" class="badge badge--active">Активен</span>
+                <div th:if="${u.blocked}" class="user-block-reason" th:text="${u.blockReason}">Мультиаккаунт</div>
+            </td>
+            <td class="user-actions">
+                <span th:if="${u.username == me}" class="user-no-block">Это вы</span>
+                <span th:if="${u.admin and u.username != me}" class="user-no-block">Администратор</span>
+
+                <form th:if="${u.blocked and !u.admin}" th:action="@{/admin/users/{id}/unblock(id=${u.id})}"
+                      method="post" class="block-form">
+                    <input type="hidden" name="q" th:value="${query}">
+                    <button type="submit" class="btn btn-outline btn-small">Разблокировать</button>
+                </form>
+
+                <form th:if="${!u.blocked and !u.admin}" th:action="@{/admin/users/{id}/block(id=${u.id})}"
+                      method="post" class="block-form">
+                    <input type="hidden" name="q" th:value="${query}">
+                    <select name="term" class="block-term" aria-label="Срок блокировки">
+                        <option th:each="t : ${terms}" th:value="${t}" th:text="${t.title}">7 дней</option>
+                    </select>
+                    <input type="text" name="reason" class="annul-reason block-reason" maxlength="200"
+                           placeholder="Причина" aria-label="Причина блокировки">
+                    <button type="submit" class="btn btn-outline btn-small btn-danger">Заблокировать</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

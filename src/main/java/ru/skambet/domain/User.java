@@ -46,6 +46,14 @@ public class User {
     // feature 19: identity approved by the administrator, null - not verified
     private LocalDateTime verifiedAt;
 
+    // feature 20: blacklist. blockedAt is set - blocked until blockedUntil, null there means forever
+    private LocalDateTime blockedAt;
+
+    private LocalDateTime blockedUntil;
+
+    @Column(length = 200)
+    private String blockReason;
+
     protected User() {
     }
 
@@ -82,6 +90,29 @@ public class User {
 
     public void verify(LocalDateTime when) {
         this.verifiedAt = when;
+    }
+
+    public boolean isBlocked() {
+        return isBlockedAt(LocalDateTime.now());
+    }
+
+    /**
+     * A block for a term ends by itself, nothing has to be changed in the db for that.
+     */
+    public boolean isBlockedAt(LocalDateTime moment) {
+        return blockedAt != null && (blockedUntil == null || blockedUntil.isAfter(moment));
+    }
+
+    public void block(LocalDateTime from, LocalDateTime until, String reason) {
+        this.blockedAt = from;
+        this.blockedUntil = until;
+        this.blockReason = reason;
+    }
+
+    public void unblock() {
+        this.blockedAt = null;
+        this.blockedUntil = null;
+        this.blockReason = null;
     }
 
     public boolean isAdmin() {
@@ -130,5 +161,17 @@ public class User {
 
     public LocalDateTime getVerifiedAt() {
         return verifiedAt;
+    }
+
+    public LocalDateTime getBlockedAt() {
+        return blockedAt;
+    }
+
+    public LocalDateTime getBlockedUntil() {
+        return blockedUntil;
+    }
+
+    public String getBlockReason() {
+        return blockReason;
     }
 }

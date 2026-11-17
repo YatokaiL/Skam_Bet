@@ -842,3 +842,51 @@ button.odd {
     align-items: center;
     margin: 0;
 }
+
+/* feature 20: blacklist */
+
+.badge--active {
+    background: rgba(46, 204, 113, 0.15);
+    color: var(--green);
+}
+
+.badge--blocked {
+    background: rgba(231, 76, 60, 0.15);
+    color: var(--red);
+}
+
+.user-block-reason {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.user-no-block {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.block-form {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin: 0;
+}
+
+.block-form select {
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-input);
+    color: var(--text);
+    font-family: inherit;
+}
+
+.user-balance,
+.user-status .badge {
+    white-space: nowrap;
+}
+
+.block-form .block-reason {
+    width: 110px;
+}

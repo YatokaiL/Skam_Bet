@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import ru.skambet.domain.User;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -21,6 +22,20 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select u from User u where u.username = :username")
     Optional<User> findForUpdate(@Param("username") String username);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select u from User u where u.id = :id")
+    Optional<User> findByIdForUpdate(@Param("id") Long id);
+
+    /**
+     * Feature 20: search in the admin panel by a part of the login or email.
+     * The pattern must have %, _ and ! escaped with !, see BlacklistService.
+     */
+    @Query("select u from User u where lower(u.username) like lower(:pattern) escape '!' "
+            + "or lower(u.email) like lower(:pattern) escape '!' order by u.username")
+    List<User> search(@Param("pattern") String pattern);
+
+    List<User> findAllByOrderByUsernameAsc();
 
     /**
      * Atomic update in the db, does not depend on the user object loaded earlier in the transaction.

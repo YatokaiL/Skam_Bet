@@ -27,6 +27,11 @@
     function refresh() {
         fetch(url, {headers: {'Accept': 'application/json'}, credentials: 'same-origin'})
             .then(function (response) {
+                if (response.status === 401) {
+                    // feature 20: the user has been blocked - the reload leads to the login page with the reason
+                    window.location.reload();
+                    return null;
+                }
                 return response.ok ? response.json() : null;
             })
             .then(function (offers) {
